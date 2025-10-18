@@ -66,11 +66,7 @@ export default function App() {
   
   return (
     <SafeAreaView style={s.root}>
-      {/* Titulli */}
-      <View style={s.header}>
-        <Text style={s.headerX}>✕</Text>
-      </View>
-
+      
       {/* Karta */}
       <Pressable style={s.card} onPress={handleReveal}>
         <Text style={s.playerTitle}>Player {player + 1}</Text>
@@ -115,7 +111,7 @@ export default function App() {
 }
 
 const s = StyleSheet.create({
-  root: { flex: 1, backgroundColor: "#ff3b30" },
+  root: { flex: 1, backgroundColor: "#26423dff" },
   header: {
     height: 44,
     alignItems: "flex-end",
@@ -155,7 +151,7 @@ const s = StyleSheet.create({
   },
   role: { fontSize: 36, fontWeight: "900" },
   word: { color: "white" },
-  spy: { color: "#F43F5E" },
+  spy: { color: "#ff0000ff" },
   sub: { color: "#cbd5e1", marginTop: 8, textAlign: "center" },
   footer: {
     paddingHorizontal: 16,

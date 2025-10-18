@@ -1,10 +1,30 @@
 // SetupScreen.js
 import { Link } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
+
 export default function SetupScreen() {
+
+    const [players, setPlayers] = useState(0);
+    const [spy, setSpy] = useState(0);
+
+    const increasePlayers = () => {
+    if (players < 8) setPlayers(players + 1);
+  };
+
+  const decreasePlayers = () => {
+    if (players > 2) setPlayers(players - 1);
+  };
+
+    const increaseSpy = () => {
+        if(spy < 3) setSpy(spy + 1);
+    }
+
+    const decreaseSpy = () => {
+        if(spy > 2) setSpy(spy - 1);
+    }
   return ( 
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>  
@@ -13,18 +33,29 @@ export default function SetupScreen() {
         <View style={styles.card}>
           <Text style={styles.label}>Number of Players</Text>
           <View style={styles.row}>
-            <Text style={styles.step}>-</Text>
-            <Text style={styles.value}>4</Text>
-            <Text style={styles.step}>+</Text>
+            <TouchableOpacity onPress={decreasePlayers}>
+              <Text style={styles.step}>-</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.value}>{players}</Text>
+
+            <TouchableOpacity onPress={increasePlayers}>
+              <Text style={styles.step}>+</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
         <View style={styles.card}>
             <Text style={styles.label}>Number of Spys</Text>
             <View style={styles.row}>
-                <Text style={styles.step}>-</Text>
-                <Text style={styles.step}>2</Text>
-                <Text style={styles.step}>+</Text>
+                <TouchableOpacity onPress={decreaseSpy}>
+                    <Text style={styles.step}>-</Text>
+                </TouchableOpacity>
+                <Text style={styles.step}>{spy}</Text>
+
+                <TouchableOpacity onPress={increaseSpy}>
+                    <Text style={styles.step}>+</Text>
+                </TouchableOpacity>
             </View>
         </View>
 

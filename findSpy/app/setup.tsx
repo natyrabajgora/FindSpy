@@ -86,32 +86,76 @@ export default function SetupScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1 },
-  container: {  flexDirection: 'column', justifyContent: 'center',flex: 1, padding: 30, gap: 20 },
-  title: { fontSize: 20, fontWeight: '700', textAlign: 'center', marginVertical: 8 },
+  safe: { flex: 1, backgroundColor: '#0d0d0f' },
+
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 24,
+    gap: 20,
+  },
+
+  title: {
+    fontSize: 22,
+    fontWeight: '800',
+    textAlign: 'center',
+    color: '#ffffff',
+    marginTop: 8,
+    marginBottom: 8,
+  },
 
   card: {
     padding: 14,
     borderWidth: 1,
-    borderRadius: 8,
+    borderColor: '#262a33',
+    backgroundColor: '#181a1f',
+    borderRadius: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+
+    // subtle shadow
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
   },
-  label: { fontSize: 14,},
-  
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'flex-end' },
-                
-  step: { fontSize: 18, paddingHorizontal: 4, paddingVertical: 12 }, // “-” dhe “+” placeholder
-  
-  value: { fontSize: 16 },
+
+  label: { fontSize: 14, color: '#e7e9ee', fontWeight: '600' },
+
+  row: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+
+  roundBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    borderColor: '#2e323b',
+    backgroundColor: '#1f2229',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  step: { fontSize: 16, color: '#e7e9ee', fontWeight: '700' },
+
+  value: { fontSize: 16, color: '#ffffff', fontWeight: '700', minWidth: 28, textAlign: 'center' },
+  valueDim: { fontSize: 15, color: '#b6bcc6', fontWeight: '600' },
 
   startBtn: {
     marginTop: 8,
-    paddingVertical: 14,
-    borderWidth: 1,
-    borderRadius: 12,
+    paddingVertical: 16,
+    borderRadius: 20,
+    backgroundColor: '#26423dff',
     alignItems: 'center',
+
+    shadowColor: '#0a826cff',
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
   },
-  startText: { fontSize: 16, fontWeight: '600' },
+
+  startText: { fontSize: 16, fontWeight: '800', color: '#ffffff' },
 });
+

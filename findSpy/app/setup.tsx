@@ -1,12 +1,13 @@
 // SetupScreen.js
 import { Link } from 'expo-router';
 import React from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function SetupScreen() {
-  return ( /*gjdo sen qe bohet mrena return ka me u shfaq ne screen ne form tu UI*/
+  return ( 
     <SafeAreaView style={styles.safe}>
-      <View style={styles.container}>  {/* si container munen me e mar si div */}
+      <View style={styles.container}>  
         <Text style={styles.title}>Game Setup</Text>
 
         <View style={styles.card}>
@@ -43,8 +44,10 @@ export default function SetupScreen() {
             </View>
         </View>
 
-        <Link href="/cards" style={styles.startBtn}>
-  <Text style={styles.startText}>Start Game ▶</Text>
+        <Link href="/cards" asChild>
+  <TouchableOpacity style={styles.startBtn}>
+    <Text style={styles.startText}>Start Game ▶</Text>
+  </TouchableOpacity>
 </Link>
       </View>
     </SafeAreaView>

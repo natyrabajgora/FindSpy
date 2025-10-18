@@ -1,4 +1,5 @@
 // SetupScreen.js
+import { Link } from 'expo-router';
 import React from 'react';
 import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
@@ -42,9 +43,9 @@ export default function SetupScreen() {
             </View>
         </View>
 
-        <TouchableOpacity style={styles.startBtn}>
-          <Text style={styles.startText}>Start Game ▶</Text>
-        </TouchableOpacity>
+        <Link href="/cards" style={styles.startBtn}>
+  <Text style={styles.startText}>Start Game ▶</Text>
+</Link>
       </View>
     </SafeAreaView>
   );

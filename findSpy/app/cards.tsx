@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { SafeAreaView, View, Text, Pressable, StyleSheet } from "react-native";
-import { useLocalSearchParams, router, Link } from 'expo-router';
-import { useLocalSearchParams, router, Link } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 
 const WORDS = [
   "Bar", "Beach", "Cinema", "School", "Hospital",
@@ -59,27 +58,9 @@ export default function CardsScreen() {
         <View style={s.center}>
           <Text style={s.bigText}>TIMER</Text>
           <View style={{ height: 20 }} />
-
-          {/* REVEAL SPY */}
-        <Link href="/reveal" asChild>
-          <Pressable style={s.btnDark}>
-            <Text style={s.btnDarkText}>Reveal Spy</Text>
+          <Pressable style={s.btnDark} onPress={handleRestart}>
+            <Text style={s.btnDarkText}>Start New Game</Text>
           </Pressable>
-        </Link>
-
-        {/* Butoni rifillim */}
-        <Link href="/" asChild>
-          <Pressable style={s.btnLight}>
-            <Text style={s.btnLightText}>Start New Game</Text>
-          </Pressable>
-        </Link>
-      </View>
-    </SafeAreaView>
-          <Link href="/setup" asChild>
-  <Pressable style={s.btnDark}>
-    <Text style={s.btnDarkText}>Start New Game</Text>
-  </Pressable>
-</Link>
         </View>
       </SafeAreaView>
     );
@@ -125,7 +106,6 @@ export default function CardsScreen() {
     </SafeAreaView>
   );
 }
-
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#26423dff" },
 

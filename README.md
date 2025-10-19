@@ -1,125 +1,117 @@
-# FindSpy
+# 🎮 **FindSpy – Multiplayer Spy Game**
 
-Një lojë e thjeshtë “Spy” me 🔍 React Native + Expo — zgjedh numrin e lojtarëve dhe spy, secili sheh rolin, pastaj zbulohet spy-i.
+## 📘 **Project Overview**
 
-
-## 👥 Anëtarët e Grupit
-
-- **Vesa Hadergjonaj**
-- **Natyra Bajgora**
-- **Leon Troni**
-- **Erion Troni**
-
-
-## 🎮 FLOW I LOJËS
-
-###  1 **Home Screen** → `app/index.tsx`
-Ekrani i parë kur hapet aplikacioni.
-
-#### Çfarë bën:
-- Shfaq ilustrimin (`spy.jpg`), titullin **SPY**, dhe përshkrimin.
-- Ka tre butona:
-  -  **NEW GAME** → të dërgon te `/setup`
-  -  **LOG IN** → placeholder (për versionet e ardhshme)
-  -  **HOW TO PLAY** → të çon në faqen e udhëzimeve (`/howtoplay`)
-- Navigimi bëhet me `router.push()` nga `expo-router`.
-
-#### Përdor:
-`SafeAreaView`, `Image`, `Pressable`, `StatusBar`, `router.push()`.
-
-📂 **File:** `app/index.tsx`
+**FindSpy** është një aplikacion mobil ndërtuar me **React Native** dhe **Expo**, që simolon një lojë interaktive të tipit “Spy”.  
+Lojtarët zgjedhin numrin e pjesëmarrësve dhe spiunëve, secili merr një rol përkatës, dhe në fund zbulohet kush është spiuni.  
+Qëllimi kryesor është të krijohet një përvojë argëtuese ndërvepruese me një ndërfaqe të thjeshtë, intuitive dhe të përshtatshme për pajisje mobile.
 
 ---
 
-### 2 **Setup Screen** (`app/index.tsx`)
-- Kjo është faqja e parë që hapet.
+## 🎯 **Objectives**
+
+- Zhvillimi i një aplikacioni me **React Native** dhe **Expo** për platforma mobile (Android/iOS).  
+- Përdorimi i **state management** me React Hooks.  
+- Implementimi i **navigimit ndërfaqësor** me `expo-router`.  
+- Testimi i konceptit të lojës përmes një rrjedhe të qartë dhe funksionale të ekraneve.
+
+---
+
+## ⚙️ **System Features**
+
+| Nr | Përshkrimi i Funksionalitetit | Lokacioni në Kod |
+|----|-------------------------------|------------------|
+| 1 | **Home Screen** – Ekrani fillestar me opsionet *New Game*, *Login* dhe *How To Play*. | `app/index.tsx` |
+| 2 | **Setup Screen** – Konfigurimi i lojës (numri i lojtarëve, spiunëve, kategoria, kohëzgjatja). | `app/setup.tsx` |
+| 3 | **Cards Screen** – Pjesa kryesore e lojës ku lojtarët zbulojnë rolin e tyre. | `app/cards.tsx` |
+| 4 | **Reveal Screen** – Shfaq spiunin në fund të lojës dhe mundëson fillimin e një loje të re. | `app/reveal.tsx` |
+| 5 | **Login Screen** – Mock-login për demonstrim të funksionalitetit të autentikimit. | `app/login.tsx` |
+
+---
+
+## 🧭 **Game Flow**
+
+### 1️⃣ Home Screen
+- Hapet kur ekzekutohet aplikacioni.  
+- Shfaq ilustrimin e lojës, titullin dhe përshkrimin përmbledhës.  
+- Butonat kryesorë:
+  - *NEW GAME* → dërgon përdoruesin në ekranin e konfigurimit.  
+  - *LOG IN* → placeholder për versionet e ardhshme.  
+  - *HOW TO PLAY* → dërgon në ekranin e udhëzimeve.  
+- Navigimi realizohet me `router.push()` nga `expo-router`.
+
+### 2️⃣ Setup Screen
 - Lojtari zgjedh:
-  - Numrin e lojtarëve (**3 – 8**)
-  - Numrin e spive (**1 – 3**, por gjithmonë më pak se lojtarët)
-  - Kategori
-  - Kohëzgjatje.
-- UI përbëhet nga karta me butona `+` dhe `-` për çdo opsion.
-- Butoni **Start Game ▶** çon te `/cards`, duke kaluar `players` dhe `spies` si parametra.
+  - Numrin e lojtarëve (3–8)
+  - Numrin e spiunëve (1–3)
+  - Kategorinë e fjalëve
+  - Kohëzgjatjen e lojës  
+- Përdoren komponente interaktive (`TouchableOpacity`, `useState`) për përzgjedhje dinamike.  
+- Butoni *Start Game ▶* e dërgon lojtarin te ekrani i kartave (`/cards`) duke kaluar parametrat përmes URL-së.
 
-#### Përdor:
-`SafeAreaView`, `TouchableOpacity`, `Text`, `View`, `useState`, `StyleSheet`, `Link`, `useState`.
+### 3️⃣ Cards Screen
+- Çdo lojtar shikon kartën e vet:
+  - Nëse është **Spy**, shfaqet fjala *Spy* me ngjyrë të kuqe.  
+  - Nëse **nuk është Spy**, shfaqet fjala sekrete (e përbashkët për të tjerët).  
+- Lojtarët kalojnë në rend me *Next Player*.  
+- Pas lojtarit të fundit, del opsioni *Reveal Spy*.  
+- Përdoren `useLocalSearchParams`, `useMemo` dhe `useState` për menaxhim të parametrave dhe gjendjes së lojës.
 
-📂 **File:** `app/index.tsx`
+### 4️⃣ Reveal Screen
+- Ekrani përfundimtar i lojës.  
+- Shfaq spiunin (“The Spy is...”) dhe ofron butonin *Start New Game* që kthen përdoruesin në faqen fillestare.
 
----
-
-### 3 **Cards Screen** (`app/cards.tsx`)
-- Ky është thelbi i lojës.
-- Aty secili lojtar në rend e prek kartën për të zbuluar rolin:
-  - nëse është **Spy** → i del teksti **“Spy”** me të kuqe,
-  - nëse **nuk është Spy** → i del një **fjalë e fshehtë** (e njëjtë për të gjithë të tjerët).
-- Pas çdo “Reveal”, lojtari shtyp **Next Player**, dhe loja kalon te lojtari tjetër.
-- Kur lojtari i fundit përfundon, del **ekrani TIMER**, me butonin:
-  - ⏱ **Reveal Spy** (shkon te /reveal)
-- Gjatë lojës fjalët përzgjidhen nga një listë `WORDS` e paracaktuar (p.sh. “Beach”, “Bar”, “Cinema”...).
-- “Spy”-t zgjidhen rastësisht me `Set` (`spySet.has(current)` kontrollon nëse lojtari është spiun).
-
-#### Përdor:
-`SafeAreaView`, `View`, `Text`, `Pressable`, `StyleSheet`, `useState`, `useMemo`, `useLocalSearchParams`, `router`, `Link`
-
-📂 **File:** `app/cards.tsx`
+### 5️⃣ Login Screen
+- Implementim bazë i inputeve për emër përdoruesi dhe fjalëkalim.  
+- Përdoret për demonstrim të validimit dhe menaxhimit të inputeve.
 
 ---
 
-### 4 **Reveal Screen** (`app/reveal.tsx`)
-- Hapet pasi përfundon loja (nga “Reveal Spy”).
-- Shfaqet ekrani:
-  - Teksti: **“The Spy is…”**
-  - Placeholder për emrin e lojtarit (`Player …`)
-  - Butoni **Start New Game**, që të kthen te faqja e parë (`/`)
-- Ky screen është statik (s’është funksional për momentin, thjesht UI).
+## 🧩 **Technologies Used**
 
-#### Përdor:
-`SafeAreaView`, `View`, `Text`, `Pressable`, `StyleSheet`, `Link`, `FlatList`.
+**React Native**
 
-📂 **File:** `app/reveal.tsx`
+**Expo** 
+
+**JavaScript/TypeScript** 
+
+**Expo Router** 
+
+**React Hooks** 
+
 
 ---
 
-### 5 **Login Screen** → `app/login.tsx`
-- Mock login (validon input-et dhe bën push në `/setup` për kredenciale demo).
+## 👥 **Development Team**
 
-#### Përdor:
-`SafeAreaView`, `Text`, `TextInput`, `Pressable`, `Alert`, `View`, `StyleSheet`, `useState`, `useRouter`  
 
-📂 **File:** `app/login.tsx`
+**Vesa Hadergjonaj** 
 
----
+**Natyra Bajgora** 
 
-##  Si funksionon
+**Leon Troni** 
 
-1. **Setup**
-   - Përdor `useState` për të ruajtur `players` dhe `spy`.
-   - `+ / -` kontrollojnë limitet (min 3 lojtarë, min 1 spy).
-   - Kur shtyp **Start Game**, parametrot dërgohen në `/cards`.
-
-2. **Cards**
-   - `useLocalSearchParams()` i merr `players` dhe `spies` nga URL.
-   - `pickRandom(WORDS)` zgjedh fjalën sekrete.
-   - `spySet` krijohet përzgjedhje rastësisht nga lojtarët.
-   - `handleReveal()` tregon rolin për çdo lojtar.
-   - `handleNext()` kalon në lojtarin tjetër derisa të përfundojnë të gjithë.
-
-3. **Reveal**
-   - Ekran i thjeshtë me mesazh “The Spy is …” dhe butonin për rifillim të lojës.
+**Erion Troni** 
 
 ---
 
+## 🚀 **Installation & Setup**
 
-## 🚀 Quick Start
+### **Kërkesat**
+- Node.js  
+- npm ose yarn  
+- Expo CLI
 
+### **Hapat për nisje**
 ```bash
-# Instalimi
+# Klono repository-n
+git clone https://github.com/username/FindSpy.git
+cd FindSpy
+
+# Instalo varësitë
 npm install
 
-# Nisja e app-it
+# Nise aplikacionin
 npm run start
-# Pastaj:
-#  a → Android emulator
-#  i → iOS simulator
-#  w → Web version
+
+

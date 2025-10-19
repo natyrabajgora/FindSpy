@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { SafeAreaView, View, Text, Pressable, StyleSheet } from "react-native";
+import { useLocalSearchParams, router } from 'expo-router';
 
 const WORDS = [
   "Bar", "Beach", "Cinema", "School", "Hospital",
@@ -10,47 +11,48 @@ function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export default function App() {
-  const [player, setPlayer] = useState(0); 
-  const [revealed, setRevealed] = useState(false);
-  const [word, setWord] = useState<string | null>(null);
-  const [gameOver, setGameOver] = useState(false); 
 
-  // Kur lojtari prek card 
-  const handleReveal = () => {
-    if (revealed) return;
+export default function CardsScreen() {
+  const params = useLocalSearchParams<{ players?: string; spies?: string }>();
+  const players = Math.max(3, Math.min(8, Number(params.players) || 4));
+  const spies = Math.max(1, Math.min(3, Math.min(players - 1, Number(params.spies) || 1)));
 
-    if (player === 0) {
-      const newWord = word ?? pickRandom(WORDS);
-      setWord(newWord);
+  const [current, setCurrent] = useState(0);          // indeksi i lojtarit qe sheh card
+  const [revealed, setRevealed] = useState(false);    // card per current player 
+  const [finished, setFinished] = useState(false);    // a e kan shiku te gjith card 
+
+  const word = useMemo(() => pickRandom(WORDS), []);
+
+  // random choosing per spies 
+  const spySet = useMemo(() => {
+    const indices = new Set<number>();
+    while (indices.size < spies) {
+      indices.add(Math.floor(Math.random() * players));
     }
+    return indices;
+  }, [players, spies]);
 
-    setRevealed(true);
+  const isSpy = spySet.has(current);
+
+  const handleReveal = () => {
+    if (!revealed) setRevealed(true);
   };
 
-  // Kalon te lojtari tjeter
-  const handleNextPlayer = () => {
-    if (player === 0) {
-      setPlayer(1);
+  const handleNext = () => {
+    if (!revealed) return;
+    if (current + 1 < players) {
+      setCurrent(current + 1);
       setRevealed(false);
     } else {
-      // kur mbaron Player 2 → loja mbaron
-      setGameOver(true);
+      setFinished(true);
     }
   };
 
-  // Rifillon loja
   const handleRestart = () => {
-    setPlayer(0);
-    setRevealed(false);
-    setWord(null);
-    setGameOver(false);
+    router.back(); // kthehu te setup per rekonfigurim 
   };
 
-  const isSpy = player === 1;
-
-  
-  if (gameOver) {
+  if (finished) {
     return (
       <SafeAreaView style={s.root}>
         <View style={s.center}>
@@ -67,9 +69,8 @@ export default function App() {
   return (
     <SafeAreaView style={s.root}>
       <View style={s.centerContent}>
-        {/* card */}
         <Pressable style={s.card} onPress={handleReveal}>
-          <Text style={s.playerTitle}>Player {player + 1}</Text>
+          <Text style={s.playerTitle}>Player {current + 1}</Text>
 
           {!revealed ? (
             <Text style={s.revealHint}>Tap to Reveal</Text>
@@ -90,15 +91,14 @@ export default function App() {
           )}
         </Pressable>
 
-        {/* Butoni posht card */}
         {!revealed ? (
           <Pressable style={s.btnLight} onPress={handleReveal}>
             <Text style={s.btnLightText}>Reveal</Text>
           </Pressable>
         ) : (
-          <Pressable style={s.btnDark} onPress={handleNextPlayer}>
+          <Pressable style={s.btnDark} onPress={handleNext}>
             <Text style={s.btnDarkText}>
-              {player === 0 ? "Next Player" : "Finish Game"}
+              {current + 1 < players ? 'Next Player' : 'Finish'}
             </Text>
           </Pressable>
         )}
@@ -106,7 +106,6 @@ export default function App() {
     </SafeAreaView>
   );
 }
-
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#26423dff" },
 
@@ -169,6 +168,7 @@ const s = StyleSheet.create({
     width: "60%",
     marginTop: 24, 
   },
+
   btnLightText: { color: "#111827", fontWeight: "800" },
   btnDark: {
     backgroundColor: "#111827",

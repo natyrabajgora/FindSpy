@@ -6,7 +6,7 @@ Një lojë e thjeshtë “Spy” me 🔍 React Native + Expo — zgjedh numrin e
 ## 👥 Anëtarët e Grupit
 
 - **Vesa Hadergjonaj**
-- **Natyr Bajgora**
+- **Natyra Bajgora**
 - **Leon Troni**
 - **Erion Troni**
 

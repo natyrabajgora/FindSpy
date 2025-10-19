@@ -3,6 +3,12 @@
 Një lojë e thjeshtë “Spy” me 🔍 React Native + Expo — zgjedh numrin e lojtarëve dhe spy, secili sheh rolin, pastaj zbulohet spy-i.
 
 
+## 👥 Anëtarët e Grupit
+
+- **Vesa Hadergjonaj**
+- **Natyr Bajgora**
+- **Leon Troni**
+- **Erion Troni**
 
 
 ## 🎮 FLOW I LOJËS
@@ -69,7 +75,7 @@ Ekrani i parë kur hapet aplikacioni.
 - Ky screen është statik (s’është funksional për momentin, thjesht UI).
 
 #### Përdor:
-`SafeAreaView`, `View`, `Text`, `Pressable`, `StyleSheet`, `Link`.
+`SafeAreaView`, `View`, `Text`, `Pressable`, `StyleSheet`, `Link`, `FlatList`.
 
 📂 **File:** `app/reveal.tsx`
 
@@ -85,7 +91,7 @@ Ekrani i parë kur hapet aplikacioni.
 
 ---
 
-## ⚡️ Si funksionon
+##  Si funksionon
 
 1. **Setup**
    - Përdor `useState` për të ruajtur `players` dhe `spy`.

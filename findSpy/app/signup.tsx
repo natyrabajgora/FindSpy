@@ -1,55 +1,66 @@
 import React, { useState } from "react";
-import { SafeAreaView, Text, TextInput, Pressable, Alert, View, StyleSheet } from "react-native";
-import { useRouter } from "expo-router"; // për navigim
+import { SafeAreaView, Text, TextInput, Pressable, View, StyleSheet, Alert } from "react-native";
+import { useRouter } from "expo-router";
 
-export default function LoginScreen() {
+export default function SignupScreen() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirm, setConfirm] = useState("");
 
-    const handleLogin = () => {
-        if (!email || !password) {
+    const handleSignup = () => {
+        if (!email || !password || !confirm) {
             Alert.alert("Gabim", "Ju lutem plotësoni të gjitha fushat.");
             return;
         }
 
-        if (email === "example@user.com" && password === "12345678") {
-            router.push("/"); // shko te faqja e lojës
-        } else {
-            Alert.alert("Gabim", "Kredencialet janë të pasakta.");
+        if (password !== confirm) {
+            Alert.alert("Gabim", "Fjalëkalimet nuk përputhen.");
+            return;
         }
+
+        Alert.alert("Sukses", "Llogaria u krijua me sukses!");
+        router.push("/"); // kthehu te login
     };
 
     return (
         <SafeAreaView style={s.root}>
             <View style={s.center}>
-                <Text style={s.title}>Login</Text>
+                <Text style={s.title}>Sign Up</Text>
 
                 <TextInput
                     placeholder="Email"
+                    placeholderTextColor="#aaa"
+                    autoCapitalize="none"
                     value={email}
                     onChangeText={setEmail}
-                    placeholderTextColor="#aaa"
                     style={s.input}
-                    autoCapitalize="none"
                 />
 
                 <TextInput
                     placeholder="Password"
+                    placeholderTextColor="#aaa"
                     secureTextEntry
                     value={password}
                     onChangeText={setPassword}
-                    placeholderTextColor="#aaa"
                     style={s.input}
                 />
 
-                <Pressable style={s.btnDark} onPress={handleLogin}>
-                    <Text style={s.btnDarkText}>Login</Text>
+                <TextInput
+                    placeholder="Confirm Password"
+                    placeholderTextColor="#aaa"
+                    secureTextEntry
+                    value={confirm}
+                    onChangeText={setConfirm}
+                    style={s.input}
+                />
+
+                <Pressable style={s.btnDark} onPress={handleSignup}>
+                    <Text style={s.btnDarkText}>Sign Up</Text>
                 </Pressable>
 
-                {/* 👇 Butoni i ri për Sign Up */}
-                <Pressable style={s.btnLight} onPress={() => router.push("/signup")}>
-                    <Text style={s.btnLightText}>Create Account</Text>
+                <Pressable style={s.btnLight} onPress={() => router.push("/login")}>
+                    <Text style={s.btnLightText}>Back to Login</Text>
                 </Pressable>
             </View>
         </SafeAreaView>
@@ -75,7 +86,6 @@ const s = StyleSheet.create({
         paddingHorizontal: 24,
         alignItems: "center",
         width: "60%",
-        marginTop: 10,
     },
     btnDarkText: { color: "white", fontWeight: "800" },
     btnLight: {

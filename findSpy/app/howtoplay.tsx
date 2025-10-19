@@ -20,7 +20,7 @@ export default function HowToPlay() {
         <Text style={styles.text}>
           🎯 <Text style={styles.bold}>Spy Game</Text> është lojë për 3+ lojtarë.
           {"\n\n"}
-          🕵️‍♂️ Njëri lojtar është SPIU – ai nuk e di vendin sekret.{"\n"}
+          🕵️‍♂️ Njëri lojtar është SPIUN – ai nuk e di vendin sekret.{"\n"}
           👥 Të tjerët e dinë vendin dhe përpiqen të zbulojnë kush është SPIU.{"\n\n"}
           ❓ Lojtarët bëjnë pyetje me radhë për ta zbuluar njëri-tjetrin.{"\n"}
           🗳️ Në fund, votohet për të gjetur SPIUN.{"\n"}
@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 42,
     fontWeight: "900",
-    color: "#D22",
+    color: "#26423dff",
     marginBottom: 20,
     letterSpacing: 1,
   },
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   btn: {
-    backgroundColor: "#7A1B1B",
+    backgroundColor: "#26423dff",
     paddingVertical: 14,
     paddingHorizontal: 28,
     borderRadius: 22,

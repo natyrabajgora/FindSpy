@@ -27,9 +27,10 @@ export default function Home() {
   <Text style={styles.btnText}>NEW GAME</Text>
 </Pressable>
 
-        <Pressable style={styles.btn} onPress={() => {}}> 
-          <Text style={styles.btnText}>LOG IN</Text>
-        </Pressable>
+       <Pressable style={styles.btn} onPress={() => router.push("/login")}>
+  <Text style={styles.btnText}>LOG IN</Text>
+</Pressable>
+
 
         <Pressable
           style={styles.btn}
@@ -55,7 +56,7 @@ const styles = StyleSheet.create({
     fontSize: 56,
     fontWeight: "900",
     letterSpacing: 2,
-    color: "#D22",
+    color: "#26423dff",
     marginTop: 6,
   },
   subtitle: {
@@ -74,6 +75,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 12,
   },
-  primary: { backgroundColor: "#7A1B1B" },
+  primary: { backgroundColor: "#26423dff" },
   btnText: { color: "white", fontWeight: "800", letterSpacing: 1, fontSize: 18 },
 });

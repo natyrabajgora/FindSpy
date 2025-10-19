@@ -11,19 +11,28 @@ export default function SetupScreen() {
     const [spy, setSpy] = useState(0);
 
     const increasePlayers = () => {
-    if (players < 8) setPlayers(players + 1);
+    if (players < 8) {
+      const next = players + 1;
+      setPlayers(next);
+      if (spy >= next) setSpy(next - 1);
+      if (next <= 3) setSpy(1);
+    }
   };
 
   const decreasePlayers = () => {
-    if (players > 2) setPlayers(players - 1);
+    if (players > 3) {
+      const next = players - 1;
+      setPlayers(next);
+      if(spy >= next) setSpy(Math.max(1, next - 1));
+    }
   };
 
-    const increaseSpy = () => {
-        if(spy < 3) setSpy(spy + 1);
-    }
+  const increaseSpy = () => {
+    if (spy < Math.max(1, players - 1) && spy < 3) setSpy(spy + 1);
+  };
 
     const decreaseSpy = () => {
-        if(spy > 2) setSpy(spy - 1);
+        if(spy > 0) setSpy(spy - 1);
     }
   return ( 
     <SafeAreaView style={styles.safe}>
@@ -75,11 +84,17 @@ export default function SetupScreen() {
             </View>
         </View>
 
-        <Link href="/cards" asChild>
-  <TouchableOpacity style={styles.startBtn}>
-    <Text style={styles.startText}>Start Game ▶</Text>
-  </TouchableOpacity>
-</Link>
+        <Link
+          href={{
+            pathname: '/cards',
+            params: { players: String(players), spies: String(spy) },
+          }}
+          asChild
+        >
+          <TouchableOpacity style={styles.startBtn}>
+            <Text style={styles.startText}>Start Game ▶</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
     </SafeAreaView>
   );

@@ -1,4 +1,4 @@
-# 🎮 **FindSpy – Multiplayer Spy Game**
+# 🎮 **GR.18 FindSpy – Multiplayer Spy Game**
 
 ## 📘 **Project Overview**
 

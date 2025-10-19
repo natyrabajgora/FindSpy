@@ -82,7 +82,7 @@ export default function SetupScreen() {
          <View style={styles.card}>
             <Text style={styles.label}>Category</Text>
             <View style={styles.row}>
-                <Text style={styles.step}>chose</Text>
+                <Text style={styles.step}>choose</Text>
             </View>
         </View>
 

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { SafeAreaView, View, Text, Pressable, StyleSheet } from "react-native";
-import { useLocalSearchParams, router } from 'expo-router';
+import { useLocalSearchParams, router, Link } from 'expo-router';
 
 const WORDS = [
   "Bar", "Beach", "Cinema", "School", "Hospital",
@@ -58,9 +58,11 @@ export default function CardsScreen() {
         <View style={s.center}>
           <Text style={s.bigText}>TIMER</Text>
           <View style={{ height: 20 }} />
-          <Pressable style={s.btnDark} onPress={handleRestart}>
-            <Text style={s.btnDarkText}>Start New Game</Text>
-          </Pressable>
+          <Link href="/setup" asChild>
+  <Pressable style={s.btnDark}>
+    <Text style={s.btnDarkText}>Start New Game</Text>
+  </Pressable>
+</Link>
         </View>
       </SafeAreaView>
     );

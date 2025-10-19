@@ -105,7 +105,7 @@ Qëllimi kryesor është të krijohet një përvojë argëtuese ndërvepruese me
 ### **Hapat për nisje**
 ```bash
 # Klono repository-n
-git clone https://github.com/username/FindSpy.git
+git clone https://github.com/natyrabajgora/FindSpy
 cd FindSpy
 
 # Instalo varësitë

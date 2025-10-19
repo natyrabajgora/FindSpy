@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { SafeAreaView, View, Text, Pressable, StyleSheet } from "react-native";
+import { useLocalSearchParams, router } from 'expo-router';
 
 const WORDS = [
   "Bar", "Beach", "Cinema", "School", "Hospital",
@@ -10,51 +11,53 @@ function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export default function App() {
-  const [player, setPlayer] = useState(0); 
-  const [revealed, setRevealed] = useState(false);
-  const [word, setWord] = useState<string | null>(null);
-  const [gameOver, setGameOver] = useState(false); 
 
-  // Kur lojtari prek card 
-  const handleReveal = () => {
-    if (revealed) return;
+export default function CardsScreen() {
+  const params = useLocalSearchParams<{ players?: string; spies?: string }>();
+  const players = Math.max(3, Math.min(8, Number(params.players) || 4));
+  const spies = Math.max(1, Math.min(3, Math.min(players - 1, Number(params.spies) || 1)));
 
-    if (player === 0) {
-      const newWord = word ?? pickRandom(WORDS);
-      setWord(newWord);
+  const [current, setCurrent] = useState(0);          // indeksi i lojtarit qe sheh card
+  const [revealed, setRevealed] = useState(false);    // card per current player 
+  const [finished, setFinished] = useState(false);    // a e kan shiku te gjith card 
+
+  const word = useMemo(() => pickRandom(WORDS), []);
+
+  // random choosing per spies 
+  const spySet = useMemo(() => {
+    const indices = new Set<number>();
+    while (indices.size < spies) {
+      indices.add(Math.floor(Math.random() * players));
     }
+    return indices;
+  }, [players, spies]);
 
-    setRevealed(true);
+  const isSpy = spySet.has(current);
+
+  const handleReveal = () => {
+    if (!revealed) setRevealed(true);
   };
 
-  // Kalon te lojtari tjeter
-  const handleNextPlayer = () => {
-    if (player === 0) {
-      setPlayer(1);
+  const handleNext = () => {
+    if (!revealed) return;
+    if (current + 1 < players) {
+      setCurrent(current + 1);
       setRevealed(false);
     } else {
-      // kur mbaron Player 2 → loja mbaron
-      setGameOver(true);
+      setFinished(true);
     }
   };
 
-  // Rifillon loja
   const handleRestart = () => {
-    setPlayer(0);
-    setRevealed(false);
-    setWord(null);
-    setGameOver(false);
+    router.back(); // kthehu te setup per rekonfigurim 
   };
 
-  const isSpy = player === 1;
-
-  
-  if (gameOver) {
+  if (finished) {
     return (
       <SafeAreaView style={s.root}>
         <View style={s.center}>
           <Text style={s.bigText}>TIMER</Text>
+          <View style={{ height: 20 }} />
           <Pressable style={s.btnDark} onPress={handleRestart}>
             <Text style={s.btnDarkText}>Start New Game</Text>
           </Pressable>
@@ -63,45 +66,39 @@ export default function App() {
     );
   }
 
-  
   return (
     <SafeAreaView style={s.root}>
-      
-      {/* Karta */}
-      <Pressable style={s.card} onPress={handleReveal}>
-        <Text style={s.playerTitle}>Player {player + 1}</Text>
+      <View style={s.centerContent}>
+        <Pressable style={s.card} onPress={handleReveal}>
+          <Text style={s.playerTitle}>Player {current + 1}</Text>
+
+          {!revealed ? (
+            <Text style={s.revealHint}>Tap to Reveal</Text>
+          ) : (
+            <View style={s.revealBox}>
+              {isSpy ? (
+                <>
+                  <Text style={[s.role, s.spy]}>Spy</Text>
+                  <Text style={s.sub}>Figure out the secret word.</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={[s.role, s.word]}>{word}</Text>
+                  <Text style={s.sub}>Find who the spy is!</Text>
+                </>
+              )}
+            </View>
+          )}
+        </Pressable>
 
         {!revealed ? (
-          <Text style={s.revealHint}>Tap to Reveal</Text>
-        ) : (
-          <View style={s.revealBox}>
-            {isSpy ? (
-              <>
-                <Text style={[s.role, s.spy]}>Spy</Text>
-                <Text style={s.sub}>Figure out the secret word.</Text>
-              </>
-            ) : (
-              <>
-                <Text style={[s.role, s.word]}>{word}</Text>
-                <Text style={s.sub}>Find who the spy is!</Text>
-              </>
-            )}
-          </View>
-        )}
-      </Pressable>
-
-      {/* Butonat posht */}
-      <View style={s.footer}>
-        {!revealed && (
           <Pressable style={s.btnLight} onPress={handleReveal}>
             <Text style={s.btnLightText}>Reveal</Text>
           </Pressable>
-        )}
-
-        {revealed && (
-          <Pressable style={s.btnDark} onPress={handleNextPlayer}>
+        ) : (
+          <Pressable style={s.btnDark} onPress={handleNext}>
             <Text style={s.btnDarkText}>
-              {player === 0 ? "Next Player" : "Finish Game"}
+              {current + 1 < players ? 'Next Player' : 'Finish'}
             </Text>
           </Pressable>
         )}
@@ -109,18 +106,24 @@ export default function App() {
     </SafeAreaView>
   );
 }
-
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#26423dff" },
-  header: {
-    height: 44,
-    alignItems: "flex-end",
+
+  centerContent: {
+    flex: 1,
     justifyContent: "center",
-    paddingHorizontal: 12,
+    alignItems: "center",
   },
-  headerX: { color: "white", fontSize: 18, opacity: 0.9 },
+
+  // Ekrani i gameOver
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   card: {
-    marginHorizontal: 16,
+    width: "85%",
     borderRadius: 20,
     backgroundColor: "#111827",
     height: 320,
@@ -128,6 +131,7 @@ const s = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   playerTitle: {
     color: "white",
     fontSize: 28,
@@ -153,11 +157,8 @@ const s = StyleSheet.create({
   word: { color: "white" },
   spy: { color: "#ff0000ff" },
   sub: { color: "#cbd5e1", marginTop: 8, textAlign: "center" },
-  footer: {
-    paddingHorizontal: 16,
-    marginTop: 20,
-    alignItems: "center",
-  },
+
+  // Butonat
   btnLight: {
     backgroundColor: "white",
     borderRadius: 14,
@@ -165,7 +166,9 @@ const s = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: "center",
     width: "60%",
+    marginTop: 24, 
   },
+
   btnLightText: { color: "#111827", fontWeight: "800" },
   btnDark: {
     backgroundColor: "#111827",
@@ -174,8 +177,9 @@ const s = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: "center",
     width: "60%",
+    marginTop: 24,
   },
   btnDarkText: { color: "white", fontWeight: "800" },
+
   bigText: { color: "white", fontSize: 32, fontWeight: "900" },
-  center: { flex: 1, justifyContent: "center", alignItems: "center", gap: 20 },
 });

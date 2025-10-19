@@ -1,50 +1,105 @@
-# Welcome to your Expo app 👋
+# FindSpy
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Një lojë e thjeshtë “Spy” me 🔍 React Native + Expo — zgjedh numrin e lojtarëve dhe spy, secili sheh rolin, pastaj zbulohet spy-i.
 
-## Get started
 
-1. Install dependencies
 
-   ```bash
-   npm install
-   ```
 
-2. Start the app
+## 🎮 FLOW I LOJËS
 
-   ```bash
-   npx expo start
-   ```
+###  1 **Home Screen** → `app/index.tsx`
+Ekrani i parë kur hapet aplikacioni.
 
-In the output, you'll find options to open the app in a
+#### Çfarë bën:
+- Shfaq ilustrimin (`spy.jpg`), titullin **SPY**, dhe përshkrimin.
+- Ka tre butona:
+  -  **NEW GAME** → të dërgon te `/setup`
+  -  **LOG IN** → placeholder (për versionet e ardhshme)
+  -  **HOW TO PLAY** → të çon në faqen e udhëzimeve (`/howtoplay`)
+- Navigimi bëhet me `router.push()` nga `expo-router`.
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+#### Përdor:
+`SafeAreaView`, `Image`, `Pressable`, `StatusBar`, `router.push()`.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+📂 **File:** `app/index.tsx`
 
-## Get a fresh project
+### 2 **Setup Screen** (`app/index.tsx`)
+- Kjo është faqja e parë që hapet.
+- Lojtari zgjedh:
+  - Numrin e lojtarëve (**3 – 8**)
+  - Numrin e spive (**1 – 3**, por gjithmonë më pak se lojtarët)
+  - (Opsionale) kategori ose kohëzgjatje.
+- UI përbëhet nga karta me butona `+` dhe `-` për çdo opsion.
+- Butoni **Start Game ▶** çon te `/cards`, duke kaluar `players` dhe `spies` si parametra.
 
-When you're ready, run:
+#### Përdor:
+`SafeAreaView`, `TouchableOpacity`, `Text`, `View`, `useState`, `StyleSheet`, `Link`, `useState`.
+
+📂 **File:** `app/index.tsx`
+
+---
+
+### 3 **Cards Screen** (`app/cards.tsx`)
+- Ky është thelbi i lojës.
+- Aty secili lojtar në rend e prek kartën për të zbuluar rolin:
+  - nëse është **Spy** → i del teksti **“Spy”** me të kuqe,
+  - nëse **nuk është Spy** → i del një **fjalë e fshehtë** (e njëjtë për të gjithë të tjerët).
+- Pas çdo “Reveal”, lojtari shtyp **Next Player**, dhe loja kalon te lojtari tjetër.
+- Kur lojtari i fundit përfundon, del **ekrani TIMER**, me butonin:
+  - ⏱ **Reveal Spy** (shkon te /reveal)
+- Gjatë lojës fjalët përzgjidhen nga një listë `WORDS` e paracaktuar (p.sh. “Beach”, “Bar”, “Cinema”...).
+- “Spy”-t zgjidhen rastësisht me `Set` (`spySet.has(current)` kontrollon nëse lojtari është spiun).
+
+#### Përdor:
+`SafeAreaView`, `View`, `Text`, `Pressable`, `StyleSheet`, `useState`, `useMemo`, `useLocalSearchParams`, `router`, `Link`
+
+📂 **File:** `app/cards.tsx`
+
+---
+
+### 4 **Reveal Screen** (`app/reveal.tsx`)
+- Hapet pasi përfundon loja (nga “Reveal Spy”).
+- Shfaqet ekrani:
+  - Teksti: **“The Spy is…”**
+  - Placeholder për emrin e lojtarit (`Player …`)
+  - Butoni **Start New Game**, që të kthen te faqja e parë (`/`)
+- Ky screen është statik (s’është funksional për momentin, thjesht UI).
+
+#### Përdor:
+`SafeAreaView`, `View`, `Text`, `Pressable`, `StyleSheet`, `Link`.
+
+📂 **File:** `app/reveal.tsx`
+
+---
+
+## ⚡️ Si funksionon
+
+1. **Setup**
+   - Përdor `useState` për të ruajtur `players` dhe `spy`.
+   - `+ / -` kontrollojnë limitet (min 3 lojtarë, min 1 spy).
+   - Kur shtyp **Start Game**, parametrot dërgohen në `/cards`.
+
+2. **Cards**
+   - `useLocalSearchParams()` i merr `players` dhe `spies` nga URL.
+   - `pickRandom(WORDS)` zgjedh fjalën sekrete.
+   - `spySet` krijohet përzgjedhje rastësisht nga lojtarët.
+   - `handleReveal()` tregon rolin për çdo lojtar.
+   - `handleNext()` kalon në lojtarin tjetër derisa të përfundojnë të gjithë.
+
+3. **Reveal**
+   - Ekran i thjeshtë me mesazh “The Spy is …” dhe butonin për rifillim të lojës.
+
+---
+
+## 🚀 Quick Start
 
 ```bash
-npm run reset-project
-```
+# Instalimi
+npm install
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# Nisja e app-it
+npm run start
+# Pastaj:
+#  a → Android emulator
+#  i → iOS simulator
+#  w → Web version

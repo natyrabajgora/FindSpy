@@ -67,7 +67,7 @@ export default function CardsScreen() {
         </Link>
 
         {/* Butoni për rifillim */}
-        <Link href="/" asChild>
+        <Link href="/setup" asChild>
           <Pressable style={s.btnLight}>
             <Text style={s.btnLightText}>Start New Game</Text>
           </Pressable>

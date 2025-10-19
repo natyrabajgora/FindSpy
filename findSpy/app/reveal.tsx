@@ -15,7 +15,7 @@ export default function RevealScreen() {
         </View>
 
         {/* Kthen te Setup (/ root) */}
-        <Link href="/" asChild>
+        <Link href="/setup" asChild>
           <Pressable style={s.btnPrimary}>
             <Text style={s.btnPrimaryText}>Start New Game</Text>
           </Pressable>

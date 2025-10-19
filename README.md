@@ -17,15 +17,18 @@ Qëllimi kryesor është të krijohet një përvojë argëtuese ndërvepruese me
 
 ---
 
-## ⚙️ **System Features**
+## ⚙️ System Features
 
-| Nr | Përshkrimi i Funksionalitetit | Lokacioni në Kod |
-|----|-------------------------------|------------------|
-| 1 | **Home Screen** – Ekrani fillestar me opsionet *New Game*, *Login* dhe *How To Play*. | `app/index.tsx` |
-| 2 | **Setup Screen** – Konfigurimi i lojës (numri i lojtarëve, spiunëve, kategoria, kohëzgjatja). | `app/setup.tsx` |
-| 3 | **Cards Screen** – Pjesa kryesore e lojës ku lojtarët zbulojnë rolin e tyre. | `app/cards.tsx` |
-| 4 | **Reveal Screen** – Shfaq spiunin në fund të lojës dhe mundëson fillimin e një loje të re. | `app/reveal.tsx` |
-| 5 | **Login Screen** – Mock-login për demonstrim të funksionalitetit të autentikimit. | `app/login.tsx` |
+1. **Home Screen** – Main screen with options for *New Game*, *Login*, and *How To Play*.  
+   Located in: `app/index.tsx`
+2. **Setup Screen** – Configures the game (number of players, spies, category, and duration).  
+   Located in: `app/setup.tsx`
+3. **Cards Screen** – Core gameplay screen where each player reveals their role.  
+   Located in: `app/cards.tsx`
+4. **Reveal Screen** – Displays the spy (or spies) at the end of the game and allows starting a new one.  
+   Located in: `app/reveal.tsx`
+5. **Login Screen** – Mock login screen to demonstrate authentication functionality.  
+   Located in: `app/login.tsx`
 
 ---
 
@@ -69,15 +72,11 @@ Qëllimi kryesor është të krijohet një përvojë argëtuese ndërvepruese me
 
 ## 🧩 **Technologies Used**
 
-**React Native**
-
-**Expo** 
-
-**JavaScript/TypeScript** 
-
-**Expo Router** 
-
-**React Hooks** 
+- React Native
+- Expo
+- JavaScript/TypeScript
+- Expo Router
+- React Hooks
 
 
 ---
@@ -85,13 +84,10 @@ Qëllimi kryesor është të krijohet një përvojë argëtuese ndërvepruese me
 ## 👥 **Development Team**
 
 
-**Vesa Hadergjonaj** 
-
-**Natyra Bajgora** 
-
-**Leon Troni** 
-
-**Erion Troni** 
+- Vesa Hadergjonaj
+- Natyra Bajgora 
+- Leon Troni 
+- Erion Troni 
 
 ---
 

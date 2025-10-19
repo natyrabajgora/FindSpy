@@ -35,7 +35,7 @@ export default function SetupScreen() {
   };
 
     const decreaseSpy = () => {
-        if(spy > 0) setSpy(spy - 1);
+        if(spy > 1) setSpy(spy - 1);
     }
   return ( 
     <SafeAreaView style={styles.safe}>

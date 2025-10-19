@@ -60,11 +60,21 @@ export default function CardsScreen() {
           <View style={{ height: 20 }} />
 
            {/* Butoni për REVEAL SPY */}
-        <Link href="/reveal" asChild>
-          <Pressable style={s.btnDark}>
-            <Text style={s.btnDarkText}>Reveal Spy</Text>
-          </Pressable>
-        </Link>
+        <Link
+  href={{
+    pathname: "/reveal",
+    params: {
+      players: String(players),
+      spies: JSON.stringify(Array.from(spySet)), // dergon listen me spy 
+    },
+  }}
+  asChild
+>
+  <Pressable style={s.btnDark}>
+    <Text style={s.btnDarkText}>Reveal Spy</Text>
+  </Pressable>
+</Link>
+
 
         {/* Butoni për rifillim */}
         <Link href="/setup" asChild>

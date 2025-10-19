@@ -46,13 +46,13 @@ export default function SetupScreen() {
           <Text style={styles.label}>Number of Players</Text>
           <View style={styles.row}>
             <TouchableOpacity onPress={decreasePlayers}>
-              <Text style={styles.step}>-</Text>
+              <Text style={styles.stepSimbol}>-</Text>
             </TouchableOpacity>
 
             <Text style={styles.value}>{players}</Text>
 
             <TouchableOpacity onPress={increasePlayers}>
-              <Text style={styles.step}>+</Text>
+              <Text style={styles.stepSimbol}>+</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -61,12 +61,12 @@ export default function SetupScreen() {
             <Text style={styles.label}>Number of Spys</Text>
             <View style={styles.row}>
                 <TouchableOpacity onPress={decreaseSpy}>
-                    <Text style={styles.step}>-</Text>
+                    <Text style={styles.stepSimbol}>-</Text>
                 </TouchableOpacity>
                 <Text style={styles.step}>{spy}</Text>
 
                 <TouchableOpacity onPress={increaseSpy}>
-                    <Text style={styles.step}>+</Text>
+                    <Text style={styles.stepSimbol}>+</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
   },
 
   step: { fontSize: 16, color: '#e7e9ee', fontWeight: '700' },
+  stepSimbol: { fontSize: 32, color: '#26423dff', fontWeight: '900' },
 
   value: { fontSize: 16, color: '#ffffff', fontWeight: '700', minWidth: 28, textAlign: 'center' },
   valueDim: { fontSize: 15, color: '#b6bcc6', fontWeight: '600' },

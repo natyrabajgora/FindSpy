@@ -7,20 +7,23 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function SetupScreen() {
 
-    const [players, setPlayers] = useState(0);
-    const [spy, setSpy] = useState(0);
+  const min_players =3;
+  const max_players = 8;
+
+    const [players, setPlayers] = useState(min_players);
+    const [spy, setSpy] = useState(1);
 
     const increasePlayers = () => {
-    if (players < 8) {
+    if (players < max_players) {
       const next = players + 1;
       setPlayers(next);
-      if (spy >= next) setSpy(next - 1);
-      if (next <= 3) setSpy(1);
+      if (spy >= next) setSpy(Math.max(1, next - 1));
+      if (next <= min_players) setSpy(1);
     }
   };
 
   const decreasePlayers = () => {
-    if (players > 3) {
+    if (players > min_players) {
       const next = players - 1;
       setPlayers(next);
       if(spy >= next) setSpy(Math.max(1, next - 1));
@@ -69,12 +72,11 @@ export default function SetupScreen() {
         </View>
 
          <View style={styles.card}>
-            <Text style={styles.label}>Duration</Text>
-            <View style={styles.row}>
-                <Text style={styles.step}>-</Text>
-                <Text style={styles.step}>5</Text>
-                <Text style={styles.step}>+</Text>
-            </View>
+          <Text style={styles.label}>Duration</Text>
+          <View style={styles.row}>
+            <Text style={styles.step}>5</Text>
+            <Text style={styles.valueDim}>min</Text>
+          </View>
         </View>
 
          <View style={styles.card}>

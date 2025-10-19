@@ -1,4 +1,4 @@
-# FindSpy# FindSpy
+# FindSpy
 
 Një lojë e thjeshtë “Spy” me 🔍 React Native + Expo — zgjedh numrin e lojtarëve dhe spy, secili sheh rolin, pastaj zbulohet spy-i.
 

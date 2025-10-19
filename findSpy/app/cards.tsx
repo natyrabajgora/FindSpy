@@ -74,14 +74,6 @@ export default function CardsScreen() {
     <Text style={s.btnDarkText}>Reveal Spy</Text>
   </Pressable>
 </Link>
-
-
-        {/* Butoni për rifillim */}
-        <Link href="/setup" asChild>
-          <Pressable style={s.btnLight}>
-            <Text style={s.btnLightText}>Start New Game</Text>
-          </Pressable>
-        </Link>
       </View>
     </SafeAreaView>
     );

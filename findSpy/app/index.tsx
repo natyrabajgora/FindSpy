@@ -20,9 +20,12 @@ export default function Home() {
         <Text style={styles.title}>SPY</Text>
         <Text style={styles.subtitle}>Party Game for 3+ Players</Text>
 
-        <Pressable style={[styles.btn, styles.primary]} onPress={() => {}}>
-          <Text style={styles.btnText}>NEW GAME</Text>
-        </Pressable>
+       <Pressable
+  style={[styles.btn, styles.primary]}
+  onPress={() => router.push("/setup")} // kjo e hap faqen setup.tsx
+>
+  <Text style={styles.btnText}>NEW GAME</Text>
+</Pressable>
 
         <Pressable style={styles.btn} onPress={() => {}}> 
           <Text style={styles.btnText}>LOG IN</Text>

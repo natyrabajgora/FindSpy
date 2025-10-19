@@ -23,12 +23,15 @@ Ekrani i parë kur hapet aplikacioni.
 
 📂 **File:** `app/index.tsx`
 
+---
+
 ### 2 **Setup Screen** (`app/index.tsx`)
 - Kjo është faqja e parë që hapet.
 - Lojtari zgjedh:
   - Numrin e lojtarëve (**3 – 8**)
   - Numrin e spive (**1 – 3**, por gjithmonë më pak se lojtarët)
-  - (Opsionale) kategori ose kohëzgjatje.
+  - Kategori
+  - Kohëzgjatje.
 - UI përbëhet nga karta me butona `+` dhe `-` për çdo opsion.
 - Butoni **Start Game ▶** çon te `/cards`, duke kaluar `players` dhe `spies` si parametra.
 
@@ -72,6 +75,16 @@ Ekrani i parë kur hapet aplikacioni.
 
 ---
 
+### 5 **Login Screen** → `app/login.tsx`
+- Mock login (validon input-et dhe bën push në `/setup` për kredenciale demo).
+
+#### Përdor:
+`SafeAreaView`, `Text`, `TextInput`, `Pressable`, `Alert`, `View`, `StyleSheet`, `useState`, `useRouter`  
+
+📂 **File:** `app/login.tsx`
+
+---
+
 ## ⚡️ Si funksionon
 
 1. **Setup**
@@ -90,6 +103,7 @@ Ekrani i parë kur hapet aplikacioni.
    - Ekran i thjeshtë me mesazh “The Spy is …” dhe butonin për rifillim të lojës.
 
 ---
+
 
 ## 🚀 Quick Start
 

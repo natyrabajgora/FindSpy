@@ -55,6 +55,7 @@ export default function App() {
       <SafeAreaView style={s.root}>
         <View style={s.center}>
           <Text style={s.bigText}>TIMER</Text>
+          <View style={{ height: 20 }} />
           <Pressable style={s.btnDark} onPress={handleRestart}>
             <Text style={s.btnDarkText}>Start New Game</Text>
           </Pressable>
@@ -63,42 +64,38 @@ export default function App() {
     );
   }
 
-  
   return (
     <SafeAreaView style={s.root}>
-      
-      {/* Karta */}
-      <Pressable style={s.card} onPress={handleReveal}>
-        <Text style={s.playerTitle}>Player {player + 1}</Text>
+      <View style={s.centerContent}>
+        {/* card */}
+        <Pressable style={s.card} onPress={handleReveal}>
+          <Text style={s.playerTitle}>Player {player + 1}</Text>
 
+          {!revealed ? (
+            <Text style={s.revealHint}>Tap to Reveal</Text>
+          ) : (
+            <View style={s.revealBox}>
+              {isSpy ? (
+                <>
+                  <Text style={[s.role, s.spy]}>Spy</Text>
+                  <Text style={s.sub}>Figure out the secret word.</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={[s.role, s.word]}>{word}</Text>
+                  <Text style={s.sub}>Find who the spy is!</Text>
+                </>
+              )}
+            </View>
+          )}
+        </Pressable>
+
+        {/* Butoni posht card */}
         {!revealed ? (
-          <Text style={s.revealHint}>Tap to Reveal</Text>
-        ) : (
-          <View style={s.revealBox}>
-            {isSpy ? (
-              <>
-                <Text style={[s.role, s.spy]}>Spy</Text>
-                <Text style={s.sub}>Figure out the secret word.</Text>
-              </>
-            ) : (
-              <>
-                <Text style={[s.role, s.word]}>{word}</Text>
-                <Text style={s.sub}>Find who the spy is!</Text>
-              </>
-            )}
-          </View>
-        )}
-      </Pressable>
-
-      {/* Butonat posht */}
-      <View style={s.footer}>
-        {!revealed && (
           <Pressable style={s.btnLight} onPress={handleReveal}>
             <Text style={s.btnLightText}>Reveal</Text>
           </Pressable>
-        )}
-
-        {revealed && (
+        ) : (
           <Pressable style={s.btnDark} onPress={handleNextPlayer}>
             <Text style={s.btnDarkText}>
               {player === 0 ? "Next Player" : "Finish Game"}
@@ -112,15 +109,22 @@ export default function App() {
 
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#26423dff" },
-  header: {
-    height: 44,
-    alignItems: "flex-end",
+
+  centerContent: {
+    flex: 1,
     justifyContent: "center",
-    paddingHorizontal: 12,
+    alignItems: "center",
   },
-  headerX: { color: "white", fontSize: 18, opacity: 0.9 },
+
+  // Ekrani i gameOver
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
   card: {
-    marginHorizontal: 16,
+    width: "85%",
     borderRadius: 20,
     backgroundColor: "#111827",
     height: 320,
@@ -128,6 +132,7 @@ const s = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   playerTitle: {
     color: "white",
     fontSize: 28,
@@ -153,11 +158,8 @@ const s = StyleSheet.create({
   word: { color: "white" },
   spy: { color: "#ff0000ff" },
   sub: { color: "#cbd5e1", marginTop: 8, textAlign: "center" },
-  footer: {
-    paddingHorizontal: 16,
-    marginTop: 20,
-    alignItems: "center",
-  },
+
+  // Butonat
   btnLight: {
     backgroundColor: "white",
     borderRadius: 14,
@@ -165,6 +167,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: "center",
     width: "60%",
+    marginTop: 24, 
   },
   btnLightText: { color: "#111827", fontWeight: "800" },
   btnDark: {
@@ -174,8 +177,9 @@ const s = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: "center",
     width: "60%",
+    marginTop: 24,
   },
   btnDarkText: { color: "white", fontWeight: "800" },
+
   bigText: { color: "white", fontSize: 32, fontWeight: "900" },
-  center: { flex: 1, justifyContent: "center", alignItems: "center", gap: 20 },
 });

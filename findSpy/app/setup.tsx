@@ -3,6 +3,8 @@ import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Slider from "@react-native-community/slider";
+
 
 
 export default function SetupScreen() {
@@ -49,6 +51,9 @@ export default function SetupScreen() {
         if(spy > 1) setSpy(spy - 1);
     }
 
+    const [duration, setDuration] = useState(5); 
+
+
   return ( 
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>  
@@ -83,13 +88,24 @@ export default function SetupScreen() {
             </View>
         </View>
 
-         <View style={styles.card}>
-          <Text style={styles.label}>Duration</Text>
-          <View style={styles.row}>
-            <Text style={styles.step}>5</Text>
-            <Text style={styles.valueDim}>min</Text>
-          </View>
-        </View>
+        <View style={styles.cardDuration}>
+  <View style={styles.durationHeader}>
+    <Text style={styles.label}>Duration</Text>
+    <Text style={styles.durationValue}>{duration} min</Text>
+  </View>
+
+  <Slider
+    style={{ width: '100%' }}
+    minimumValue={1}
+    maximumValue={10}
+    step={1}
+    value={duration}
+    minimumTrackTintColor="#0a826cff"
+    maximumTrackTintColor="#555"
+    thumbTintColor="#0a826cff"
+    onValueChange={(value) => setDuration(value)}
+  />
+</View>
 
          <View style={styles.card}>
             <Text style={styles.label}>Category</Text>
@@ -142,8 +158,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
-    // subtle shadow
     shadowColor: '#000',
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -185,6 +199,27 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     elevation: 4,
   },
+
+  cardDuration: {
+  padding: 14,
+  borderWidth: 1,
+  borderColor: '#262a33',
+  backgroundColor: '#181a1f',
+  borderRadius: 16,
+},
+
+durationHeader: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 10,
+},
+
+durationValue: {
+  fontSize: 16,
+  fontWeight: '700',
+  color: '#e7e9ee',
+},
 
   startText: { fontSize: 16, fontWeight: '800', color: '#ffffff' },
 });

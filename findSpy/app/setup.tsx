@@ -1,4 +1,4 @@
-// SetupScreen.js
+
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,30 +13,42 @@ export default function SetupScreen() {
     const [players, setPlayers] = useState(min_players);
     const [spy, setSpy] = useState(1);
 
+    const getMaxSpy = (players: number) => {
+    if (players <= 4) return 1;   
+    if (players <= 6) return 2;  
+    return 3;                     
+  };
+
     const increasePlayers = () => {
     if (players < max_players) {
       const next = players + 1;
       setPlayers(next);
-      if (spy >= next) setSpy(Math.max(1, next - 1));
-      if (next <= min_players) setSpy(1);
+
+      const allowedMax = getMaxSpy(next);
+      if (spy > allowedMax) setSpy(allowedMax);
     }
   };
 
   const decreasePlayers = () => {
     if (players > min_players) {
       const next = players - 1;
+
       setPlayers(next);
-      if(spy >= next) setSpy(Math.max(1, next - 1));
+
+      const allowedMax = getMaxSpy(next);
+      if (spy > allowedMax) setSpy(allowedMax);
     }
   };
 
-  const increaseSpy = () => {
-    if (spy < Math.max(1, players - 1) && spy < 3) setSpy(spy + 1);
+   const increaseSpy = () => {
+    const allowedMax = getMaxSpy(players);
+    if (spy < allowedMax) setSpy(spy + 1);
   };
 
     const decreaseSpy = () => {
         if(spy > 1) setSpy(spy - 1);
     }
+
   return ( 
     <SafeAreaView style={styles.safe}>
       <View style={styles.container}>  

@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
+import { makeRedirectUri } from "expo-auth-session";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -33,8 +34,8 @@ export default function LoginScreen() {
         // @ts-ignore
         // @ts-ignore
         // @ts-ignore
-        if (process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID) {
-            config.clientId = process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID;
+        if (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
+            config.webClientId = process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID;
             // expoClientId still helps when running inside Expo Go even though the type
             // is missing it.
             config.expoClientId = process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID;
@@ -171,12 +172,26 @@ type GoogleSignInButtonProps = {
 };
 
 function GoogleSignInButton({ config, loading }: GoogleSignInButtonProps) {
-    const [request, response, promptAsync] = Google.useIdTokenAuthRequest(config);
+    // @ts-ignore – TypeScript nuk e njeh useProxy, por runtime punon
+    const redirectUri = makeRedirectUri({ useProxy: true });
+
+    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+        clientId:
+            config.clientId ??
+            config.webClientId ??
+            config.androidClientId ??
+            config.iosClientId,
+        iosClientId: config.iosClientId,
+        androidClientId: config.androidClientId,
+        webClientId: config.webClientId,
+        redirectUri,
+    });
 
     useEffect(() => {
         const signInWithGoogleFirebase = async () => {
             if (response?.type === "success") {
-                const idToken = response.params?.id_token ?? response.authentication?.idToken;
+                const idToken =
+                    response.params?.id_token ?? response.authentication?.idToken;
 
                 if (!idToken) {
                     Alert.alert("Gabim", "Nuk u mor ID token nga Google.");
@@ -215,6 +230,7 @@ function GoogleSignInButton({ config, loading }: GoogleSignInButtonProps) {
         </TouchableOpacity>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: { flex: 1, justifyContent: "center", padding: 24, backgroundColor: "#fff" },

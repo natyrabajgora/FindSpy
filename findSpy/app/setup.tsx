@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Slider from "@react-native-community/slider";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../firebaseConfig";
 
 
 
@@ -52,6 +54,22 @@ export default function SetupScreen() {
     }
 
     const [duration, setDuration] = useState(5); 
+
+    const saveSetup = async () => {
+    try {
+      await addDoc(collection(db, "setups"), {
+        players,
+        spies: spy,
+        duration,
+        category: "default",
+        createdAt: Date.now(),
+      });
+      alert("Setup u ruajt me sukses!");
+    } catch (err) {
+      console.log(err);
+      alert("Gabim gjatë ruajtjes!");
+    }
+  };
 
 
   return ( 
@@ -126,6 +144,7 @@ export default function SetupScreen() {
           </TouchableOpacity>
         </Link>
       </View>
+
     </SafeAreaView>
   );
 }

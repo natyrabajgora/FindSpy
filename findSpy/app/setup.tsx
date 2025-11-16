@@ -74,7 +74,7 @@ React.useEffect(() => {
         players,
         spies: spy,
         duration,
-        category: "default",
+        category,
         createdAt: Date.now(),
       });
       alert("Setup u ruajt me sukses!");
@@ -138,14 +138,14 @@ React.useEffect(() => {
   />
 </View>
 
-       <Link
+     <Link
   href={{
     pathname: "/categories",
     params: {
-      players,
-      spies: spy,
-      duration,
-      category,
+      players: String(players),
+      spies: String(spy),
+      duration: String(duration),
+      category: String(category),
     },
   }}
   asChild
@@ -159,10 +159,15 @@ React.useEffect(() => {
   </TouchableOpacity>
 </Link>
 
-        <Link
+      <Link
   href={{
     pathname: '/cards',
-    params: { players: String(players), spies: String(spy), duration: String(duration) },
+    params: { 
+      players: String(players), 
+      spies: String(spy), 
+      duration: String(duration),
+      category: String(category),
+    },
   }}
   asChild
 >

@@ -1,5 +1,5 @@
 // app/login.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -7,13 +7,11 @@ import {
     TouchableOpacity,
     StyleSheet,
     Alert,
-    Platform,
     SafeAreaView,
     StatusBar,
 } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { makeRedirectUri } from "expo-auth-session";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -22,58 +20,18 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import { useAuth } from "../context/AuthContext";
-import type { AuthValidationErrors } from "../context/AuthContext";
 
 WebBrowser.maybeCompleteAuthSession();
-
-type GoogleOAuthConfig = Google.GoogleAuthRequestConfig & {
-    expoClientId?: string;
-};
 
 export default function LoginScreen() {
     const { validateAuthForm } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState<AuthValidationErrors>({});
+    const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
     const [loading, setLoading] = useState(false);
 
-    const googleOAuthConfig = useMemo(() => {
-        const config: GoogleOAuthConfig = {};
-
-        const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
-
-        if (webClientId) {
-            // për web mjafton kjo
-            config.clientId = webClientId;
-            config.webClientId = webClientId;
-        }
-
-        // Android / iOS nuk na duhen për browser, por po i lë nëse i shton ndonjëherë
-        if (process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID) {
-            config.androidClientId = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
-        }
-
-        if (process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID) {
-            config.iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
-        }
-
-        return config;
-    }, []);
-
-    const googleSignInConfigured = useMemo(() => {
-        return Boolean(googleOAuthConfig.clientId);
-    }, [googleOAuthConfig]);
-
-    const googleClientEnvHint = useMemo(() => {
-        return (
-            Platform.select({
-                ios: "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ose EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID",
-                android: "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ose EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID",
-                default: "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID",
-            }) ?? "Client ID-të e Google"
-        );
-    }, []);
+  
 
     const validate = () => {
         const formErrors = validateAuthForm({ email, password });
@@ -156,87 +114,50 @@ export default function LoginScreen() {
                     <View style={styles.divider} />
                 </View>
 
-                {googleSignInConfigured ? (
-                    <GoogleSignInButton config={googleOAuthConfig} loading={loading} />
-                ) : (
-                    <View style={styles.googleBlockedContainer}>
-                        <TouchableOpacity style={[styles.btn, styles.googleButton]} disabled>
-                            <Text style={styles.btnText}>VAZHDO ME GOOGLE</Text>
-                        </TouchableOpacity>
-                        <Text style={styles.googleHint}>
-                            Shto {googleClientEnvHint} në .env sipas README që ky buton të aktivizohet.
-                        </Text>
-                    </View>
-                )}
+                <GoogleSignInButton loading={loading} />
             </View>
         </SafeAreaView>
     );
 }
 
-type GoogleSignInButtonProps = {
-    config: Google.GoogleAuthRequestConfig;
-    loading: boolean;
-};
+function GoogleSignInButton({ loading }: { loading: boolean }) {
+  const GOOGLE_CLIENT_ID =
+    "277759569226-332qso79oku38r4i9u8v9lh4sodl77df.apps.googleusercontent.com";
 
-function GoogleSignInButton({ config, loading }: GoogleSignInButtonProps) {
-    // @ts-ignore – TypeScript nuk e njeh useProxy, por runtime punon
-    const redirectUri = makeRedirectUri({ useProxy: true });
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    clientId: GOOGLE_CLIENT_ID,
+    redirectUri: "http://localhost:8081", 
+  });
 
-    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-        clientId:
-            config.clientId ??
-            config.webClientId ??
-            config.androidClientId ??
-            config.iosClientId,
-        iosClientId: config.iosClientId,
-        androidClientId: config.androidClientId,
-        webClientId: config.webClientId,
-        redirectUri,
-    });
+  useEffect(() => {
+    if (response?.type === "success") {
+      const idToken =
+        response.params?.id_token ?? response.authentication?.idToken;
 
-    useEffect(() => {
-        const signInWithGoogleFirebase = async () => {
-            if (response?.type === "success") {
-                const idToken =
-                    response.params?.id_token ?? response.authentication?.idToken;
+      if (!idToken) {
+        Alert.alert("Gabim", "Google nuk dha ID token.");
+        return;
+      }
 
-                if (!idToken) {
-                    Alert.alert("Gabim", "Nuk u mor ID token nga Google.");
-                    return;
-                }
+      const credential = GoogleAuthProvider.credential(idToken);
 
-                const credential = GoogleAuthProvider.credential(idToken);
+      signInWithCredential(auth, credential).catch((err) =>
+        Alert.alert("Gabim", err.message)
+      );
+    }
+  }, [response]);
 
-                try {
-                    await signInWithCredential(auth, credential);
-                    // _layout e sheh user-in dhe shkon automatikisht në index
-                } catch (e: any) {
-                    Alert.alert("Gabim", e.message || "Nuk u kyç me Google.");
-                }
-            }
-        };
-
-        signInWithGoogleFirebase();
-    }, [response]);
-
-    const handleGoogleLogin = async () => {
-        if (!request) {
-            Alert.alert("Gabim", "Google Login nuk është gati.");
-            return;
-        }
-        await promptAsync();
-    };
-
-    return (
-        <TouchableOpacity
-            style={[styles.btn, styles.googleButton]}
-            onPress={handleGoogleLogin}
-            disabled={!request || loading}
-        >
-            <Text style={styles.btnText}>VAZHDO ME GOOGLE</Text>
-        </TouchableOpacity>
-    );
+  return (
+    <TouchableOpacity
+      style={[styles.btn, styles.googleButton]}
+      onPress={() => promptAsync()}
+      disabled={!request || loading}
+    >
+      <Text style={styles.btnText}>VAZHDO ME GOOGLE</Text>
+    </TouchableOpacity>
+  );
 }
+
 
 
 const styles = StyleSheet.create({

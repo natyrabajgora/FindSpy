@@ -1,15 +1,17 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "API_KEY_YT",
-    authDomain: "PROJECT_ID.firebaseapp.com",
-    projectId: "PROJECT_ID",
-    storageBucket: "PROJECT_ID.appspot.com",
-    messagingSenderId: "SENDER_ID",
-    appId: "APP_ID",
+  apiKey: "AIzaSyC4W5OAUeafRbu8HPI8gZ_uLpfW0i1NTUA",
+  authDomain: "findspy-app.firebaseapp.com",
+  projectId: "findspy-app",
+  storageBucket: "findspy-app.firebasestorage.app",
+  messagingSenderId: "277759569226",
+  appId: "1:277759569226:web:752895872bfb1f8b4ee5b3",
 };
 
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
+export const db = getFirestore(app);

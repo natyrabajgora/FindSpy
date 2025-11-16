@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Slider from "@react-native-community/slider";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../firebaseConfig";
+import { useLocalSearchParams } from "expo-router";
 
 
 
@@ -52,6 +55,31 @@ export default function SetupScreen() {
     }
 
     const [duration, setDuration] = useState(5); 
+
+const params = useLocalSearchParams();
+
+React.useEffect(() => {
+  if (params.players) setPlayers(Number(params.players));
+  if (params.spies) setSpy(Number(params.spies));
+  if (params.duration) setDuration(Number(params.duration));
+}, [params]);
+
+
+    const saveSetup = async () => {
+    try {
+      await addDoc(collection(db, "setups"), {
+        players,
+        spies: spy,
+        duration,
+        category: "default",
+        createdAt: Date.now(),
+      });
+      alert("Setup u ruajt me sukses!");
+    } catch (err) {
+      console.log(err);
+      alert("Gabim gjatë ruajtjes!");
+    }
+  };
 
 
   return ( 
@@ -117,7 +145,7 @@ export default function SetupScreen() {
         <Link
           href={{
             pathname: '/cards',
-            params: { players: String(players), spies: String(spy) },
+            params: { players: String(players), spies: String(spy), duration: String(duration) },
           }}
           asChild
         >
@@ -126,6 +154,17 @@ export default function SetupScreen() {
           </TouchableOpacity>
         </Link>
       </View>
+
+            <TouchableOpacity style={styles.startBtn} onPress={saveSetup}>
+  <Text style={styles.startText}>Save Setup 💾</Text>
+</TouchableOpacity>
+
+<Link href="/saved-setups" asChild>
+  <TouchableOpacity style={styles.startBtn}>
+    <Text style={styles.startText}>Open Saved Setups 📁</Text>
+  </TouchableOpacity>
+</Link>
+
     </SafeAreaView>
   );
 }

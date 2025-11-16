@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from "expo-router";
-import { View, Text, TextInput, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
 import { db } from "../firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -29,45 +29,111 @@ export default function EditScreen() {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ color: "white", fontSize: 20, marginBottom: 10 }}>
-        Edit players
-      </Text>
+    <View style={s.safe}>
+      <View style={s.container}>
 
-      <TextInput
-        value={players}
-        onChangeText={setPlayers}
-        style={{
-          backgroundColor: "white",
-          padding: 10,
-          marginVertical: 10,
-          borderRadius: 8,
-        }}
-      />
+        <Text style={s.title}>Edit Setup</Text>
 
-      <TouchableOpacity
-        onPress={save}
-        style={{
-          backgroundColor: "green",
-          padding: 12,
-          borderRadius: 8,
-          marginBottom: 20,
-        }}
-      >
-        <Text style={{ color: "white", textAlign: "center" }}>Save ✔</Text>
-      </TouchableOpacity>
+        <View style={s.card}>
+          <Text style={s.label}>Players</Text>
 
-      {/* BACK BUTTON */}
-      <TouchableOpacity
-        onPress={() => router.back()}
-        style={{
-          backgroundColor: "#444",
-          padding: 12,
-          borderRadius: 8,
-        }}
-      >
-        <Text style={{ color: "white", textAlign: "center" }}>⬅ Back</Text>
-      </TouchableOpacity>
+          <TextInput
+            value={players}
+            onChangeText={setPlayers}
+            keyboardType="numeric"
+            style={s.input}
+          />
+        </View>
+
+        <TouchableOpacity style={s.btnPrimary} onPress={save}>
+          <Text style={s.btnPrimaryText}>Save ✔</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={s.btnSecondary} onPress={() => router.back()}>
+          <Text style={s.btnSecondaryText}>⬅ Back</Text>
+        </TouchableOpacity>
+
+      </View>
     </View>
   );
 }
+
+const s = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#0d0d0f",
+  },
+
+  container: {
+    flex: 1,
+    padding: 24,
+    justifyContent: "center",
+    gap: 20,
+  },
+
+  title: {
+    color: "#fff",
+    fontSize: 24,
+    fontWeight: "800",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+
+  card: {
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "#262a33",
+    backgroundColor: "#181a1f",
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+
+  label: {
+    color: "#e7e9ee",
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+
+  input: {
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  btnPrimary: {
+    paddingVertical: 16,
+    borderRadius: 20,
+    backgroundColor: "#26423dff",
+    alignItems: "center",
+    shadowColor: "#0a826cff",
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+  },
+
+  btnPrimaryText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "800",
+  },
+
+  btnSecondary: {
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: "#2e323b",
+    alignItems: "center",
+  },
+
+  btnSecondaryText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "700",
+  },
+});

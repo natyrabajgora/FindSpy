@@ -155,13 +155,13 @@ React.useEffect(() => {
         </Link>
       </View>
 
-            <TouchableOpacity style={styles.startBtn} onPress={saveSetup}>
-  <Text style={styles.startText}>Save Setup 💾</Text>
+<TouchableOpacity onPress={saveSetup}>
+  <Text style={styles.linkText}>Save Setup</Text>
 </TouchableOpacity>
 
 <Link href="/saved-setups" asChild>
-  <TouchableOpacity style={styles.startBtn}>
-    <Text style={styles.startText}>Open Saved Setups 📁</Text>
+  <TouchableOpacity>
+    <Text style={styles.linkText}>Open Saved Setups</Text>
   </TouchableOpacity>
 </Link>
 
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   },
 
   step: { fontSize: 16, color: '#e7e9ee', fontWeight: '700' },
-  stepSimbol: { fontSize: 32, color: '#26423dff', fontWeight: '900' },
+  stepSimbol: { fontSize: 32, color: '#0a826cff', fontWeight: '900' },
 
   value: { fontSize: 16, color: '#ffffff', fontWeight: '700', minWidth: 28, textAlign: 'center' },
   valueDim: { fontSize: 15, color: '#b6bcc6', fontWeight: '600' },
@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     paddingVertical: 16,
     borderRadius: 20,
-    backgroundColor: '#26423dff',
+    backgroundColor: '#0a826cff',
     alignItems: 'center',
 
     shadowColor: '#0a826cff',
@@ -261,5 +261,13 @@ durationValue: {
 },
 
   startText: { fontSize: 16, fontWeight: '800', color: '#ffffff' },
+
+  linkText: {
+  fontSize: 16,
+  fontWeight: "700",
+  color: "#0a826cff",
+  textAlign: "center",
+  marginTop: 10,
+},
 });
 

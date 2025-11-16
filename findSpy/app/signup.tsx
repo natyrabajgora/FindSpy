@@ -1,21 +1,33 @@
 import React, { useState } from "react";
 import { SafeAreaView, Text, TextInput, Pressable, View, StyleSheet, Alert } from "react-native";
 import { useRouter } from "expo-router";
+import { useAuth } from "../context/AuthContext";
+import type { AuthValidationErrors } from "../context/AuthContext";
 
 export default function SignupScreen() {
     const router = useRouter();
+    const { validateAuthForm } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirm, setConfirm] = useState("");
+    const [errors, setErrors] = useState<AuthValidationErrors>({});
 
     const handleSignup = () => {
-        if (!email || !password || !confirm) {
-            Alert.alert("Gabim", "Ju lutem plotësoni të gjitha fushat.");
-            return;
-        }
+        const formErrors = validateAuthForm({
+            email,
+            password,
+            confirmPassword: confirm,
+            requireConfirm: true,
+        });
 
-        if (password !== confirm) {
-            Alert.alert("Gabim", "Fjalëkalimet nuk përputhen.");
+        setErrors(formErrors);
+
+        if (Object.keys(formErrors).length > 0) {
+            const firstErrorMessage =
+                formErrors.email || formErrors.password || formErrors.confirmPassword;
+            if (firstErrorMessage) {
+                Alert.alert("Gabim", firstErrorMessage);
+            }
             return;
         }
 
@@ -36,6 +48,7 @@ export default function SignupScreen() {
                     onChangeText={setEmail}
                     style={s.input}
                 />
+                {errors.email && <Text style={s.error}>{errors.email}</Text>}
 
                 <TextInput
                     placeholder="Password"
@@ -45,6 +58,7 @@ export default function SignupScreen() {
                     onChangeText={setPassword}
                     style={s.input}
                 />
+                {errors.password && <Text style={s.error}>{errors.password}</Text>}
 
                 <TextInput
                     placeholder="Confirm Password"
@@ -54,6 +68,9 @@ export default function SignupScreen() {
                     onChangeText={setConfirm}
                     style={s.input}
                 />
+                {errors.confirmPassword && (
+                    <Text style={s.error}>{errors.confirmPassword}</Text>
+                )}
 
                 <Pressable style={s.btnDark} onPress={handleSignup}>
                     <Text style={s.btnDarkText}>Sign Up</Text>
@@ -78,6 +95,12 @@ const s = StyleSheet.create({
         borderRadius: 14,
         paddingVertical: 14,
         paddingHorizontal: 16,
+    },
+    error: {
+        color: "#f87171",
+        width: "80%",
+        textAlign: "left",
+        marginTop: -12,
     },
     btnDark: {
         backgroundColor: "#111827",

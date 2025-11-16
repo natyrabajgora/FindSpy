@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { useRouter } from "expo-router";
 import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -18,17 +17,17 @@ import {
     GoogleAuthProvider,
 } from "firebase/auth";
 import { auth } from "../firebaseConfig";
+import { useAuth } from "../context/AuthContext";
+import type { AuthValidationErrors } from "../context/AuthContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
 export default function LoginScreen() {
-    const router = useRouter();
+    const { validateAuthForm } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-        {}
-    );
+    const [errors, setErrors] = useState<AuthValidationErrors>({});
     const [loading, setLoading] = useState(false);
 
     // Google OAuth – PA useProxy (që t’mos ta japë error)
@@ -61,18 +60,9 @@ export default function LoginScreen() {
     }, [response]);
 
     const validate = () => {
-        const newErrors: { email?: string; password?: string } = {};
-
-        if (!email || !email.includes("@")) {
-            newErrors.email = "Email i pavlefshëm.";
-        }
-
-        if (!password || password.length < 6) {
-            newErrors.password = "Passwordi duhet ≥ 6 karaktere.";
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+        const formErrors = validateAuthForm({ email, password });
+        setErrors(formErrors);
+        return Object.keys(formErrors).length === 0;
     };
 
     const handleLogin = async () => {

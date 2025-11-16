@@ -140,7 +140,7 @@ React.useEffect(() => {
 
        <Link
   href={{
-    pathname: "categories",
+    pathname: "/categories",
     params: {
       players,
       spies: spy,

@@ -145,6 +145,16 @@ export default function SetupScreen() {
         </Link>
       </View>
 
+            <TouchableOpacity style={styles.startBtn} onPress={saveSetup}>
+  <Text style={styles.startText}>Save Setup 💾</Text>
+</TouchableOpacity>
+
+<Link href="/saved-setups" asChild>
+  <TouchableOpacity style={styles.startBtn}>
+    <Text style={styles.startText}>Open Saved Setups 📁</Text>
+  </TouchableOpacity>
+</Link>
+
     </SafeAreaView>
   );
 }

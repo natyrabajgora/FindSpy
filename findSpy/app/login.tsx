@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
-import { makeRedirectUri } from "expo-auth-session";
 import { useRouter } from "expo-router";
 import {
     createUserWithEmailAndPassword,
@@ -25,22 +24,18 @@ WebBrowser.maybeCompleteAuthSession();
 export default function LoginScreen() {
     const router = useRouter();
 
-    // states për email/password
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
     const [errors, setErrors] = useState<{ email?: string; password?: string }>(
         {}
     );
     const [loading, setLoading] = useState(false);
 
-    // GOOGLE AUTH
+    // Google OAuth – PA useProxy (që t’mos ta japë error)
     const [request, response, promptAsync] = Google.useAuthRequest({
-        clientId: "GOOGLE_CLIENT_ID",
-        redirectUri: makeRedirectUri(),
+        clientId: "GOOGLE_CLIENT_ID_YT", // nga Google Cloud Console
     });
 
-    // Kur kthehet Google OAuth
     useEffect(() => {
         const signInWithGoogleFirebase = async () => {
             if (response?.type === "success") {
@@ -55,7 +50,7 @@ export default function LoginScreen() {
 
                 try {
                     await signInWithCredential(auth, credential);
-                    // AuthContext do ta kap user-in dhe _layout do ta çojë në index
+                    // _layout e sheh user-in dhe shkon automatikisht në index
                 } catch (e: any) {
                     Alert.alert("Gabim", e.message || "Nuk u kyç me Google.");
                 }
@@ -65,7 +60,6 @@ export default function LoginScreen() {
         signInWithGoogleFirebase();
     }, [response]);
 
-    // VALIDIM I THJESHTË
     const validate = () => {
         const newErrors: { email?: string; password?: string } = {};
 
@@ -74,7 +68,7 @@ export default function LoginScreen() {
         }
 
         if (!password || password.length < 6) {
-            newErrors.password = "Passwordi duhet të ketë të paktën 6 karaktere.";
+            newErrors.password = "Passwordi duhet ≥ 6 karaktere.";
         }
 
         setErrors(newErrors);
@@ -86,9 +80,8 @@ export default function LoginScreen() {
         setLoading(true);
         try {
             await signInWithEmailAndPassword(auth, email.trim(), password);
-            // AuthContext + _layout do ta ridrejtojnë automatikisht në index
         } catch (e: any) {
-            Alert.alert("Gabim në login", e.message || "Kontrollo kredencialet.");
+            Alert.alert("Gabim në login", e.message || "Kontrollo email/password.");
         } finally {
             setLoading(false);
         }
@@ -100,7 +93,6 @@ export default function LoginScreen() {
         try {
             await createUserWithEmailAndPassword(auth, email.trim(), password);
             Alert.alert("Sukses", "Llogaria u krijua me sukses!");
-            // user është i kyçur tani -> shkon në index
         } catch (e: any) {
             Alert.alert("Gabim në regjistrim", e.message || "Diçka shkoi keq.");
         } finally {
@@ -165,10 +157,6 @@ export default function LoginScreen() {
                 disabled={!request || loading}
             >
                 <Text style={styles.buttonText}>Vazhdo me Google</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => router.replace("/")}>
-                <Text style={{ marginTop: 20, color: "#777" }}>Vazhdo pa login (test)</Text>
             </TouchableOpacity>
         </View>
     );

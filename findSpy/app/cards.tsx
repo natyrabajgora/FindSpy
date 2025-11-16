@@ -2,10 +2,11 @@ import React, { useMemo, useState, useEffect } from "react";
 import { SafeAreaView, View, Text, Pressable, StyleSheet } from "react-native";
 import { useLocalSearchParams, router, Link } from "expo-router";
 
-const WORDS = [
-  "Bar", "Beach", "Cinema", "School", "Hospital",
-  "Stadium", "Airport", "Cafe", "Library", "Museum"
-] as const;
+const CATEGORY_WORDS: Record<string, string[]> = {
+  places: ["Bar", "Beach", "Cinema", "School", "Hospital", "Stadium", "Airport", "Cafe", "Library", "Museum"],
+  food: ["Pizza", "Burger", "Tacos", "Pasta", "Soup", "Ice Cream"],
+  sports: ["Football", "Basketball", "Tennis", "Running", "Boxing", "Swimming"],
+};
 
 function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
@@ -22,6 +23,7 @@ export default function CardsScreen() {
     players?: string;
     spies?: string;
     duration?: string;
+    category?: string;
   }>();
 
   const players = Math.max(3, Math.min(8, Number(params.players) || 4));
@@ -32,6 +34,7 @@ export default function CardsScreen() {
       : 1;
 
   const duration = Number(params.duration) || 5;
+  const category = params.category || "places";
 
   const [current, setCurrent] = useState(0);
   const [revealed, setRevealed] = useState(false);
@@ -40,7 +43,9 @@ export default function CardsScreen() {
   const [timeLeft, setTimeLeft] = useState(0);
   const [timerStarted, setTimerStarted] = useState(false);
 
-  const word = useMemo(() => pickRandom(WORDS), []);
+  const word = useMemo(() => {
+  return pickRandom(CATEGORY_WORDS[category] || CATEGORY_WORDS["places"]);
+}, [category]);
 
   const spySet = useMemo(() => {
     const indices = new Set<number>();

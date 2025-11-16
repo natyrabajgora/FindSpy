@@ -1,4 +1,4 @@
-# 🎮 **GR.18 FindSpy – Multiplayer Spy Game**
+# 🎮 **FindSpy – Multiplayer Spy Game**
 
 ## 📘 **Project Overview**
 
@@ -17,18 +17,15 @@ Qëllimi kryesor është të krijohet një përvojë argëtuese ndërvepruese me
 
 ---
 
-## ⚙️ System Features
+## ⚙️ **System Features**
 
-1. **Home Screen** – Main screen with options for *New Game*, *Login*, and *How To Play*.  
-   Located in: `app/index.tsx`
-2. **Setup Screen** – Configures the game (number of players, spies, category, and duration).  
-   Located in: `app/setup.tsx`
-3. **Cards Screen** – Core gameplay screen where each player reveals their role.  
-   Located in: `app/cards.tsx`
-4. **Reveal Screen** – Displays the spy (or spies) at the end of the game and allows starting a new one.  
-   Located in: `app/reveal.tsx`
-5. **Login Screen** – Mock login screen to demonstrate authentication functionality.  
-   Located in: `app/login.tsx`
+| Nr | Përshkrimi i Funksionalitetit | Lokacioni në Kod |
+|----|-------------------------------|------------------|
+| 1 | **Home Screen** – Ekrani fillestar me opsionet *New Game*, *Login* dhe *How To Play*. | `app/index.tsx` |
+| 2 | **Setup Screen** – Konfigurimi i lojës (numri i lojtarëve, spiunëve, kategoria, kohëzgjatja). | `app/setup.tsx` |
+| 3 | **Cards Screen** – Pjesa kryesore e lojës ku lojtarët zbulojnë rolin e tyre. | `app/cards.tsx` |
+| 4 | **Reveal Screen** – Shfaq spiunin në fund të lojës dhe mundëson fillimin e një loje të re. | `app/reveal.tsx` |
+| 5 | **Login Screen** – Mock-login për demonstrim të funksionalitetit të autentikimit. | `app/login.tsx` |
 
 ---
 
@@ -52,6 +49,18 @@ Qëllimi kryesor është të krijohet një përvojë argëtuese ndërvepruese me
 - Përdoren komponente interaktive (`TouchableOpacity`, `useState`) për përzgjedhje dinamike.  
 - Butoni *Start Game ▶* e dërgon lojtarin te ekrani i kartave (`/cards`) duke kaluar parametrat përmes URL-së.
 
+#### CRUD me Firebase jane shtuar ne fazen e dyt
+
+Në projekt është përdorur **Firebase Firestore** për të realizuar plotësisht operacionet CRUD:
+
+- **CREATE** → Në *Setup Screen*, konfigurimet e lojës ruhen në koleksionin `setups` përmes `addDoc()`.
+- **READ** → Në *Saved Setups Screen*, të dhënat lexohen në kohë reale me `onSnapshot()`, duke reflektuar çdo ndryshim pa rifreskim manual.
+- **UPDATE** → Përmes ekranit *Edit*, përdoruesi mund të përditësojë një setup ekzistues përmes `updateDoc()`.
+- **DELETE** → Në *Saved Setups Screen*, elementet mund të fshihen përmes `deleteDoc()`.
+
+Komponentët përdorin **useState** dhe **useEffect** për menaxhimin e gjendjes dhe sinkronizimin me Firestore.  
+
+
 ### 3️⃣ Cards Screen
 - Çdo lojtar shikon kartën e vet:
   - Nëse është **Spy**, shfaqet fjala *Spy* me ngjyrë të kuqe.  
@@ -64,25 +73,43 @@ Qëllimi kryesor është të krijohet një përvojë argëtuese ndërvepruese me
 - Ekrani përfundimtar i lojës.  
 - Shfaq spiunin (“The Spy is...”) dhe ofron butonin *Start New Game* që kthen përdoruesin në faqen fillestare.
 
+### ⏳ Duration (Timer)
+
+- Koha e lojës zgjidhet në *Setup Screen*.
+- Një **countdown** nis automatikisht gjatë lojës.
+- Kur timer-i mbaron, loja përfundon.
+- Menaxhohet me `useState` dhe `useEffect`.
+
 ### 5️⃣ Login Screen
 - Implementim bazë i inputeve për emër përdoruesi dhe fjalëkalim.  
 - Përdoret për demonstrim të validimit dhe menaxhimit të inputeve.
+
+Në këtë fazë e dyt është implementuar një sistem i plotë autentifikimi që përfshin:
+
+- **Login me Email/Password**
+- **Regjistrim të përdoruesit me Email/Password**
+- **Google OAuth Login** përmes `expo-auth-session`
+- **Validim të inputeve të formularit**
+- **Error handling me mesazhe të qarta për përdoruesin**
+- **Redirect automatik pas login-it** në Home Screen
+- **Logout i përdoruesit** përmes `signOut(auth)`
+- **Menaxhim global i përdoruesit** me `AuthContext` dhe `onAuthStateChanged`
+
 
 ---
 
 ## 🧩 **Technologies Used**
 
-- React Native
-- Expo
-- JavaScript/TypeScript
-- Expo Router
-- React Hooks
+**React Native**
 
+- Expo 
+- JavaScript/TypeScript
+- Expo Router 
+- React Hooks
 
 ---
 
 ## 👥 **Development Team**
-
 
 - Vesa Hadergjonaj
 - Natyra Bajgora 
@@ -101,7 +128,7 @@ Qëllimi kryesor është të krijohet një përvojë argëtuese ndërvepruese me
 ### **Hapat për nisje**
 ```bash
 # Klono repository-n
-git clone https://github.com/natyrabajgora/FindSpy
+git clone https://github.com/username/FindSpy.git
 cd FindSpy
 
 # Instalo varësitë

@@ -145,7 +145,7 @@ React.useEffect(() => {
         <Link
           href={{
             pathname: '/cards',
-            params: { players: String(players), spies: String(spy) },
+            params: { players: String(players), spies: String(spy), duration: String(duration) },
           }}
           asChild
         >

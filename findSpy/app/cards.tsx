@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { SafeAreaView, View, Text, Pressable, StyleSheet } from "react-native";
-import { useLocalSearchParams, router, Link } from 'expo-router';
+import { useLocalSearchParams, router, Link } from "expo-router";
 
 const WORDS = [
   "Bar", "Beach", "Cinema", "School", "Hospital",
@@ -11,19 +11,37 @@ function pickRandom<T>(arr: readonly T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function formatTime(sec: number) {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}:${s < 10 ? "0" : ""}${s}`;
+}
 
 export default function CardsScreen() {
-  const params = useLocalSearchParams<{ players?: string; spies?: string }>();
-  const players = Math.max(3, Math.min(8, Number(params.players) || 4));
-  const spies = Math.max(1, Math.min(3, Math.min(players - 1, Number(params.spies) || 1)));
+  const params = useLocalSearchParams<{
+    players?: string;
+    spies?: string;
+    duration?: string;
+  }>();
 
-  const [current, setCurrent] = useState(0);          // indeksi i lojtarit qe sheh card
-  const [revealed, setRevealed] = useState(false);    // card per current player 
-  const [finished, setFinished] = useState(false);    // a e kan shiku te gjith card 
+  const players = Math.max(3, Math.min(8, Number(params.players) || 4));
+  const spiesParam = Number(params.spies);
+  const spies =
+    !isNaN(spiesParam) && spiesParam >= 1 && spiesParam < players
+      ? spiesParam
+      : 1;
+
+  const duration = Number(params.duration) || 5;
+
+  const [current, setCurrent] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+  const [finished, setFinished] = useState(false);
+
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [timerStarted, setTimerStarted] = useState(false);
 
   const word = useMemo(() => pickRandom(WORDS), []);
 
-  // random choosing per spies 
   const spySet = useMemo(() => {
     const indices = new Set<number>();
     while (indices.size < spies) {
@@ -48,37 +66,57 @@ export default function CardsScreen() {
     }
   };
 
-  const handleRestart = () => {
-    router.back(); // kthehu te setup per rekonfigurim 
-  };
+  // ===== TIMER EFFECT =====
+  useEffect(() => {
+    if (!timerStarted) return;
 
+    const interval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [timerStarted]);
+
+  // ===== SCREEN WHEN FINISHED =====
   if (finished) {
+    if (!timerStarted) {
+      setTimerStarted(true);
+      setTimeLeft(duration * 60);
+    }
+
     return (
       <SafeAreaView style={s.root}>
         <View style={s.center}>
-          <Text style={s.bigText}>TIMER</Text>
+          <Text style={s.bigText}>{formatTime(timeLeft)}</Text>
+
           <View style={{ height: 20 }} />
 
-           {/* Butoni për REVEAL SPY */}
-        <Link
-  href={{
-    pathname: "/reveal",
-    params: {
-      players: String(players),
-      spies: JSON.stringify(Array.from(spySet)), // dergon listen me spy 
-    },
-  }}
-  asChild
->
-  <Pressable style={s.btnDark}>
-    <Text style={s.btnDarkText}>Reveal Spy</Text>
-  </Pressable>
-</Link>
-      </View>
-    </SafeAreaView>
+          <Link
+            href={{
+              pathname: "/reveal",
+              params: {
+                players: String(players),
+                spies: JSON.stringify(Array.from(spySet)),
+              },
+            }}
+            asChild
+          >
+            <Pressable style={s.btnDark}>
+              <Text style={s.btnDarkText}>Reveal Spy</Text>
+            </Pressable>
+          </Link>
+        </View>
+      </SafeAreaView>
     );
   }
 
+  // ===== MAIN GAME SCREEN =====
   return (
     <SafeAreaView style={s.root}>
       <View style={s.centerContent}>
@@ -111,7 +149,7 @@ export default function CardsScreen() {
         ) : (
           <Pressable style={s.btnDark} onPress={handleNext}>
             <Text style={s.btnDarkText}>
-              {current + 1 < players ? 'Next Player' : 'Finish'}
+              {current + 1 < players ? "Next Player" : "Finish"}
             </Text>
           </Pressable>
         )}
@@ -119,22 +157,19 @@ export default function CardsScreen() {
     </SafeAreaView>
   );
 }
+
 const s = StyleSheet.create({
   root: { flex: 1, backgroundColor: "#26423dff" },
-
   centerContent: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-
-  // Ekrani i gameOver
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-
   card: {
     width: "85%",
     borderRadius: 20,
@@ -144,7 +179,6 @@ const s = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-
   playerTitle: {
     color: "white",
     fontSize: 28,
@@ -170,8 +204,6 @@ const s = StyleSheet.create({
   word: { color: "white" },
   spy: { color: "#ff0000ff" },
   sub: { color: "#cbd5e1", marginTop: 8, textAlign: "center" },
-
-  // Butonat
   btnLight: {
     backgroundColor: "white",
     borderRadius: 14,
@@ -179,9 +211,8 @@ const s = StyleSheet.create({
     paddingHorizontal: 24,
     alignItems: "center",
     width: "60%",
-    marginTop: 24, 
+    marginTop: 24,
   },
-
   btnLightText: { color: "#111827", fontWeight: "800" },
   btnDark: {
     backgroundColor: "#111827",
@@ -193,6 +224,5 @@ const s = StyleSheet.create({
     marginTop: 24,
   },
   btnDarkText: { color: "white", fontWeight: "800" },
-
   bigText: { color: "white", fontSize: 32, fontWeight: "900" },
 });

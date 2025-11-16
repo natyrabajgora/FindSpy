@@ -1,6 +1,16 @@
 // app/login.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Alert,
+    Platform,
+    SafeAreaView,
+    StatusBar,
+} from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import { makeRedirectUri } from "expo-auth-session";
@@ -29,18 +39,17 @@ export default function LoginScreen() {
     const [loading, setLoading] = useState(false);
 
     const googleOAuthConfig = useMemo(() => {
-        const config: GoogleOAuthConfig = {clientId: "", redirectUri: ""};
+        const config: GoogleOAuthConfig = {};
 
-        // @ts-ignore
-        // @ts-ignore
-        // @ts-ignore
-        if (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
-            config.webClientId = process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID;
-            // expoClientId still helps when running inside Expo Go even though the type
-            // is missing it.
-            config.expoClientId = process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID;
+        const webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+
+        if (webClientId) {
+            // për web mjafton kjo
+            config.clientId = webClientId;
+            config.webClientId = webClientId;
         }
 
+        // Android / iOS nuk na duhen për browser, por po i lë nëse i shton ndonjëherë
         if (process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID) {
             config.androidClientId = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
         }
@@ -49,21 +58,11 @@ export default function LoginScreen() {
             config.iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
         }
 
-        if (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
-            config.webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
-        }
-
         return config;
     }, []);
 
     const googleSignInConfigured = useMemo(() => {
-        return Boolean(
-            Platform.select({
-                ios: googleOAuthConfig.iosClientId ?? googleOAuthConfig.clientId,
-                android: googleOAuthConfig.androidClientId ?? googleOAuthConfig.clientId,
-                default: googleOAuthConfig.webClientId ?? googleOAuthConfig.clientId,
-            }),
-        );
+        return Boolean(googleOAuthConfig.clientId);
     }, [googleOAuthConfig]);
 
     const googleClientEnvHint = useMemo(() => {
@@ -108,61 +107,69 @@ export default function LoginScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>FindSpy Login</Text>
+        <SafeAreaView style={styles.root}>
+            <StatusBar barStyle="light-content" />
+            <View style={styles.center}>
+                <Text style={styles.title}>SPY</Text>
+                <Text style={styles.subtitle}>Kyçu ose krijo llogari për të vazhduar</Text>
 
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                autoCapitalize="none"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-            />
-            {errors.email && <Text style={styles.error}>{errors.email}</Text>}
+                <View style={styles.form}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Email"
+                        placeholderTextColor="#9E9E9E"
+                        autoCapitalize="none"
+                        keyboardType="email-address"
+                        value={email}
+                        onChangeText={setEmail}
+                    />
+                    {errors.email && <Text style={styles.error}>{errors.email}</Text>}
 
-            <TextInput
-                style={styles.input}
-                placeholder="Password"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-            />
-            {errors.password && <Text style={styles.error}>{errors.password}</Text>}
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        placeholderTextColor="#9E9E9E"
+                        secureTextEntry
+                        value={password}
+                        onChangeText={setPassword}
+                    />
+                    {errors.password && <Text style={styles.error}>{errors.password}</Text>}
 
-            <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-                <Text style={styles.buttonText}>{loading ? "Duke hyrë..." : "Login"}</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                style={[styles.button, styles.secondaryButton]}
-                onPress={handleRegister}
-                disabled={loading}
-            >
-                <Text style={styles.buttonText}>
-                    {loading ? "Duke regjistruar..." : "Register"}
-                </Text>
-            </TouchableOpacity>
-
-            <View style={styles.dividerContainer}>
-                <View style={styles.divider} />
-                <Text style={styles.dividerText}>ose</Text>
-                <View style={styles.divider} />
-            </View>
-
-            {googleSignInConfigured ? (
-                <GoogleSignInButton config={googleOAuthConfig} loading={loading} />
-            ) : (
-                <View style={styles.googleBlockedContainer}>
-                    <TouchableOpacity style={[styles.button, styles.googleButton]} disabled>
-                        <Text style={styles.buttonText}>Vazhdo me Google</Text>
+                    <TouchableOpacity style={[styles.btn, styles.primary]} onPress={handleLogin} disabled={loading}>
+                        <Text style={styles.btnText}>{loading ? "Duke hyrë..." : "LOGIN"}</Text>
                     </TouchableOpacity>
-                    <Text style={styles.googleHint}>
-                        Shto {googleClientEnvHint} në .env sipas README që ky buton të aktivizohet.
-                    </Text>
+
+                    <TouchableOpacity
+                        style={styles.btn}
+                        onPress={handleRegister}
+                        disabled={loading}
+                    >
+                        <Text style={styles.btnText}>
+                            {loading ? "Duke regjistruar..." : "REGISTER"}
+                        </Text>
+                    </TouchableOpacity>
                 </View>
-            )}
-        </View>
+
+                <View style={styles.dividerContainer}>
+                    <View style={styles.divider} />
+                    <Text style={styles.dividerText}>ose</Text>
+                    <View style={styles.divider} />
+                </View>
+
+                {googleSignInConfigured ? (
+                    <GoogleSignInButton config={googleOAuthConfig} loading={loading} />
+                ) : (
+                    <View style={styles.googleBlockedContainer}>
+                        <TouchableOpacity style={[styles.btn, styles.googleButton]} disabled>
+                            <Text style={styles.btnText}>VAZHDO ME GOOGLE</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.googleHint}>
+                            Shto {googleClientEnvHint} në .env sipas README që ky buton të aktivizohet.
+                        </Text>
+                    </View>
+                )}
+            </View>
+        </SafeAreaView>
     );
 }
 
@@ -222,53 +229,80 @@ function GoogleSignInButton({ config, loading }: GoogleSignInButtonProps) {
 
     return (
         <TouchableOpacity
-            style={[styles.button, styles.googleButton]}
+            style={[styles.btn, styles.googleButton]}
             onPress={handleGoogleLogin}
             disabled={!request || loading}
         >
-            <Text style={styles.buttonText}>Vazhdo me Google</Text>
+            <Text style={styles.btnText}>VAZHDO ME GOOGLE</Text>
         </TouchableOpacity>
     );
 }
 
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: "center", padding: 24, backgroundColor: "#fff" },
-    title: { fontSize: 28, fontWeight: "bold", textAlign: "center", marginBottom: 24 },
-    input: {
-        borderWidth: 1,
-        borderColor: "#ccc",
-        padding: 12,
-        borderRadius: 8,
-        marginBottom: 8,
-    },
-    button: {
-        backgroundColor: "#1e90ff",
-        padding: 14,
-        borderRadius: 8,
+    root: { flex: 1, backgroundColor: "#121212" },
+    center: {
+        flex: 1,
         alignItems: "center",
-        marginTop: 10,
+        justifyContent: "center",
+        paddingHorizontal: 20,
     },
-    secondaryButton: {
-        backgroundColor: "#4caf50",
+    title: {
+        fontSize: 48,
+        fontWeight: "900",
+        letterSpacing: 1,
+        color: "#26423dff",
+        marginBottom: 6,
     },
+    subtitle: {
+        fontSize: 16,
+        color: "#EDEDED",
+        opacity: 0.9,
+        marginBottom: 24,
+        textAlign: "center",
+    },
+    form: {
+        width: "100%",
+        alignItems: "center",
+    },
+    input: {
+        width: "86%",
+        backgroundColor: "#1E1E1E",
+        borderRadius: 22,
+        paddingVertical: 14,
+        paddingHorizontal: 18,
+        color: "#fff",
+        marginBottom: 10,
+    },
+    btn: {
+        width: "86%",
+        paddingVertical: 16,
+        borderRadius: 22,
+        backgroundColor: "#2B2B2B",
+        alignItems: "center",
+        marginTop: 12,
+    },
+    primary: { backgroundColor: "#26423dff" },
+    btnText: { color: "white", fontWeight: "800", letterSpacing: 1, fontSize: 16 },
+    error: { color: "#ff6b6b", alignSelf: "flex-start", marginLeft: "7%", marginBottom: 6 },
+    dividerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginTop: 28,
+        width: "86%",
+    },
+    divider: { flex: 1, height: 1, backgroundColor: "#2F2F2F" },
+    dividerText: { marginHorizontal: 8, color: "#EDEDED", opacity: 0.6 },
+    googleBlockedContainer: { width: "100%", marginTop: 16, alignItems: "center" },
     googleButton: {
         backgroundColor: "#db4437",
         marginTop: 16,
     },
-    buttonText: { color: "#fff", fontWeight: "600" },
-    error: { color: "red", marginBottom: 8 },
-    dividerContainer: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginTop: 20,
-    },
-    divider: { flex: 1, height: 1, backgroundColor: "#ccc" },
-    dividerText: { marginHorizontal: 8, color: "#777" },
-    googleBlockedContainer: { width: "100%", marginTop: 16 },
     googleHint: {
         marginTop: 8,
         textAlign: "center",
-        color: "#555",
+        color: "#EDEDED",
+        opacity: 0.7,
+        width: "86%",
     },
 });

@@ -1,13 +1,6 @@
 // app/login.tsx
-import React, { useEffect, useState } from "react";
-import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    Alert,
-} from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import {
@@ -22,6 +15,10 @@ import type { AuthValidationErrors } from "../context/AuthContext";
 
 WebBrowser.maybeCompleteAuthSession();
 
+type GoogleOAuthConfig = Google.GoogleAuthRequestConfig & {
+    expoClientId?: string;
+};
+
 export default function LoginScreen() {
     const { validateAuthForm } = useAuth();
 
@@ -30,34 +27,53 @@ export default function LoginScreen() {
     const [errors, setErrors] = useState<AuthValidationErrors>({});
     const [loading, setLoading] = useState(false);
 
-    // Google OAuth – PA useProxy (që t’mos ta japë error)
-    const [request, response, promptAsync] = Google.useAuthRequest({
-        clientId: "GOOGLE_CLIENT_ID_YT", // nga Google Cloud Console
-    });
+    const googleOAuthConfig = useMemo(() => {
+        const config: GoogleOAuthConfig = {clientId: "", redirectUri: ""};
 
-    useEffect(() => {
-        const signInWithGoogleFirebase = async () => {
-            if (response?.type === "success") {
-                const idToken = response.authentication?.idToken;
+        // @ts-ignore
+        // @ts-ignore
+        // @ts-ignore
+        if (process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID) {
+            config.clientId = process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID;
+            // expoClientId still helps when running inside Expo Go even though the type
+            // is missing it.
+            config.expoClientId = process.env.EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID;
+        }
 
-                if (!idToken) {
-                    Alert.alert("Gabim", "Nuk u mor ID token nga Google.");
-                    return;
-                }
+        if (process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID) {
+            config.androidClientId = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
+        }
 
-                const credential = GoogleAuthProvider.credential(idToken);
+        if (process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID) {
+            config.iosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+        }
 
-                try {
-                    await signInWithCredential(auth, credential);
-                    // _layout e sheh user-in dhe shkon automatikisht në index
-                } catch (e: any) {
-                    Alert.alert("Gabim", e.message || "Nuk u kyç me Google.");
-                }
-            }
-        };
+        if (process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID) {
+            config.webClientId = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID;
+        }
 
-        signInWithGoogleFirebase();
-    }, [response]);
+        return config;
+    }, []);
+
+    const googleSignInConfigured = useMemo(() => {
+        return Boolean(
+            Platform.select({
+                ios: googleOAuthConfig.iosClientId ?? googleOAuthConfig.clientId,
+                android: googleOAuthConfig.androidClientId ?? googleOAuthConfig.clientId,
+                default: googleOAuthConfig.webClientId ?? googleOAuthConfig.clientId,
+            }),
+        );
+    }, [googleOAuthConfig]);
+
+    const googleClientEnvHint = useMemo(() => {
+        return (
+            Platform.select({
+                ios: "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ose EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID",
+                android: "EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ose EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID",
+                default: "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID",
+            }) ?? "Client ID-të e Google"
+        );
+    }, []);
 
     const validate = () => {
         const formErrors = validateAuthForm({ email, password });
@@ -88,14 +104,6 @@ export default function LoginScreen() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleGoogleLogin = async () => {
-        if (!request) {
-            Alert.alert("Gabim", "Google Login nuk është gati.");
-            return;
-        }
-        await promptAsync();
     };
 
     return (
@@ -141,14 +149,70 @@ export default function LoginScreen() {
                 <View style={styles.divider} />
             </View>
 
-            <TouchableOpacity
-                style={[styles.button, styles.googleButton]}
-                onPress={handleGoogleLogin}
-                disabled={!request || loading}
-            >
-                <Text style={styles.buttonText}>Vazhdo me Google</Text>
-            </TouchableOpacity>
+            {googleSignInConfigured ? (
+                <GoogleSignInButton config={googleOAuthConfig} loading={loading} />
+            ) : (
+                <View style={styles.googleBlockedContainer}>
+                    <TouchableOpacity style={[styles.button, styles.googleButton]} disabled>
+                        <Text style={styles.buttonText}>Vazhdo me Google</Text>
+                    </TouchableOpacity>
+                    <Text style={styles.googleHint}>
+                        Shto {googleClientEnvHint} në .env sipas README që ky buton të aktivizohet.
+                    </Text>
+                </View>
+            )}
         </View>
+    );
+}
+
+type GoogleSignInButtonProps = {
+    config: Google.GoogleAuthRequestConfig;
+    loading: boolean;
+};
+
+function GoogleSignInButton({ config, loading }: GoogleSignInButtonProps) {
+    const [request, response, promptAsync] = Google.useIdTokenAuthRequest(config);
+
+    useEffect(() => {
+        const signInWithGoogleFirebase = async () => {
+            if (response?.type === "success") {
+                const idToken = response.params?.id_token ?? response.authentication?.idToken;
+
+                if (!idToken) {
+                    Alert.alert("Gabim", "Nuk u mor ID token nga Google.");
+                    return;
+                }
+
+                const credential = GoogleAuthProvider.credential(idToken);
+
+                try {
+                    await signInWithCredential(auth, credential);
+                    // _layout e sheh user-in dhe shkon automatikisht në index
+                } catch (e: any) {
+                    Alert.alert("Gabim", e.message || "Nuk u kyç me Google.");
+                }
+            }
+        };
+
+        signInWithGoogleFirebase();
+    }, [response]);
+
+    const handleGoogleLogin = async () => {
+        if (!request) {
+            Alert.alert("Gabim", "Google Login nuk është gati.");
+            return;
+        }
+        await promptAsync();
+    };
+
+    return (
+        <TouchableOpacity
+            style={[styles.button, styles.googleButton]}
+            onPress={handleGoogleLogin}
+            disabled={!request || loading}
+        >
+            <Text style={styles.buttonText}>Vazhdo me Google</Text>
+        </TouchableOpacity>
     );
 }
 
@@ -185,4 +249,10 @@ const styles = StyleSheet.create({
     },
     divider: { flex: 1, height: 1, backgroundColor: "#ccc" },
     dividerText: { marginHorizontal: 8, color: "#777" },
+    googleBlockedContainer: { width: "100%", marginTop: 16 },
+    googleHint: {
+        marginTop: 8,
+        textAlign: "center",
+        color: "#555",
+    },
 });

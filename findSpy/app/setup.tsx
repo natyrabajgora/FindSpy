@@ -6,6 +6,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Slider from "@react-native-community/slider";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../firebaseConfig";
+import { useLocalSearchParams } from "expo-router";
 
 
 
@@ -54,6 +55,15 @@ export default function SetupScreen() {
     }
 
     const [duration, setDuration] = useState(5); 
+
+const params = useLocalSearchParams();
+
+React.useEffect(() => {
+  if (params.players) setPlayers(Number(params.players));
+  if (params.spies) setSpy(Number(params.spies));
+  if (params.duration) setDuration(Number(params.duration));
+}, [params]);
+
 
     const saveSetup = async () => {
     try {

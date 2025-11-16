@@ -1,4 +1,3 @@
-
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -55,6 +54,8 @@ export default function SetupScreen() {
     }
 
     const [duration, setDuration] = useState(5); 
+    const [category, setCategory] = useState("places");
+
 
 const params = useLocalSearchParams();
 
@@ -62,6 +63,8 @@ React.useEffect(() => {
   if (params.players) setPlayers(Number(params.players));
   if (params.spies) setSpy(Number(params.spies));
   if (params.duration) setDuration(Number(params.duration));
+  if (params.category) setCategory(String(params.category));
+
 }, [params]);
 
 
@@ -135,24 +138,38 @@ React.useEffect(() => {
   />
 </View>
 
-         <View style={styles.card}>
-            <Text style={styles.label}>Category</Text>
-            <View style={styles.row}>
-                <Text style={styles.step}>choose</Text>
-            </View>
-        </View>
+       <Link
+  href={{
+    pathname: "categories",
+    params: {
+      players,
+      spies: spy,
+      duration,
+      category,
+    },
+  }}
+  asChild
+>
+
+  <TouchableOpacity style={styles.card}>
+    <Text style={styles.label}>Category</Text>
+    <Text style={[styles.step, { color: "#0a826cff" }]}>
+      {category.toUpperCase()}
+    </Text>
+  </TouchableOpacity>
+</Link>
 
         <Link
-          href={{
-            pathname: '/cards',
-            params: { players: String(players), spies: String(spy), duration: String(duration) },
-          }}
-          asChild
-        >
-          <TouchableOpacity style={styles.startBtn}>
-            <Text style={styles.startText}>Start Game ▶</Text>
-          </TouchableOpacity>
-        </Link>
+  href={{
+    pathname: '/cards',
+    params: { players: String(players), spies: String(spy), duration: String(duration) },
+  }}
+  asChild
+>
+  <TouchableOpacity style={styles.startBtn}>
+    <Text style={styles.startText}>Start Game ▶</Text>
+  </TouchableOpacity>
+</Link>
       </View>
 
 <TouchableOpacity onPress={saveSetup}>
@@ -270,4 +287,3 @@ durationValue: {
   marginTop: 10,
 },
 });
-

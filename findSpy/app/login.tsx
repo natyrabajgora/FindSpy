@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SafeAreaView, Text, TextInput, Pressable, Alert, View, StyleSheet } from "react-native";
-import { useRouter } from "expo-router"; // për navigim
+import { useRouter } from "expo-router"; // per navigim
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -14,7 +14,7 @@ export default function LoginScreen() {
         }
 
         if (email === "example@user.com" && password === "12345678") {
-            router.push("/"); // shko te faqja e lojës
+            router.push("/"); // shko te faqja kryesore
         } else {
             Alert.alert("Gabim", "Kredencialet janë të pasakta.");
         }
@@ -47,7 +47,7 @@ export default function LoginScreen() {
                     <Text style={s.btnDarkText}>Login</Text>
                 </Pressable>
 
-                {/* 👇 Butoni i ri për Sign Up */}
+                {/*butoni per Sign Up */}
                 <Pressable style={s.btnLight} onPress={() => router.push("/signup")}>
                     <Text style={s.btnLightText}>Create Account</Text>
                 </Pressable>
